@@ -1,0 +1,10 @@
+<h1><p><a href="/admin/">Admin</a></p></h1>
+{% if groups %}
+    <ul>
+    {% for g in groups %}
+        <li><a href="/printers/{{ g.name }}">{{ g.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No gropus are available.</p>
+{% endif %}
