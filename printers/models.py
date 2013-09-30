@@ -21,8 +21,8 @@ class Printer(models.Model):
             return self.url
             return self.protocol
     
-    def get_fields(self):
-        return [(field.name, field.value_to_string(self)) for field in Printer._meta.fields]
+    # def get_fields(self):
+    #     return [(field.name, field.value_to_string(self)) for field in Printer._meta.fields]
 
 
 class Option(models.Model):

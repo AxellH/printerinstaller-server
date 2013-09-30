@@ -4,14 +4,21 @@
 {% include "printers/nav.html" %}
 {% endblock %}
 {% block content %}
-<h3>{{ printer }}</h3>
-<ul>
-	Name: {{ printer.name }}</br>
-	URL:  {{ printer.url }}</br> 
+
+	<b>  {{ printer.name }}</b></br>
+	<br>
+	<b>Description:</b>  {{ printer.description }}</br> 
+	<b>Location:</b>  {{ printer.location }}</br> 
+	</br> 
+	<b>URL:</b>  {{ printer.url }}</br>
+	<b>Protocol:</b>  {{ printer.protocol }}</br> 
+	</br> 
+	<b>Model:</b>  {{ printer.model }}</br> 
+	<b>PPD:</b>  {{ printer.PPD }}</br> 
 	{% for o in printer.option_set.all %}
-	option: {{ o.option }}</br>
+	<i><b>option:</b> {{ o.option }}</i></br>
 	{% endfor %}
-</ul>
+
 <table id="formset" class="form">
     <thead><tr>
 		<td>

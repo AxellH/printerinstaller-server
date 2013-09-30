@@ -54,8 +54,8 @@ def edit_printer(request, printer_id):
     
 @login_required(redirect_field_name='')
 def del_printer(request, id):
-    printer = get_object_or_404(Printer, pk=id)
-    printer.delete()
+    p = get_object_or_404(Printer, pk=id)
+    p.delete()
     return redirect('printers.views.index')
     
   
@@ -91,7 +91,11 @@ def edit_printerlist(request, printerlist_id):
         form = PrinterListForm(instance=printerlist)
     return render_to_response('printers/edit_printerlist.html', {'form': form,'printerlist':printerlist}, context_instance=RequestContext(request))
     
-
+@login_required(redirect_field_name='')
+def del_printerlist(request, id):
+    p = get_object_or_404(PrinterList, pk=id)
+    p.delete()
+    return redirect('printers.views.index')
 
 
 ## This is the request that returns the plist for the Printer-Installer.app

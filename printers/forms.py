@@ -10,4 +10,3 @@ class PrinterForm(forms.ModelForm):
     class Meta:
         model = Printer
         
-        
