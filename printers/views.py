@@ -3,8 +3,6 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect, render
 from django.template import RequestContext, Template, Context, loader
 from django.template.loader import get_template
-from django.core import serializers
-from django.forms.models import model_to_dict 
 from plistlib import writePlistToString
 
 from printers.models import *
@@ -20,9 +18,9 @@ def index(request):
     return render(request, 'printers/index.html', context)
 
 
-###########################
-######  Printer ###########
-###########################
+###################################
+######  Printer Methods ###########
+###################################
 @login_required(redirect_field_name='')
 def printer_details(request, id):
     printer = get_object_or_404(Printer, pk=id)
@@ -58,7 +56,8 @@ def del_printer(request, id):
     p.delete()
     return redirect('printers.views.index')
     
-  
+
+
 ########################################
 ######  Printer List Methods ###########
 ########################################  
@@ -96,6 +95,7 @@ def del_printerlist(request, id):
     p = get_object_or_404(PrinterList, pk=id)
     p.delete()
     return redirect('printers.views.index')
+
 
 
 ## This is the request that returns the plist for the Printer-Installer.app
