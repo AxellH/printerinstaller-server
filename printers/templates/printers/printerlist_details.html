@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block nav %}
+{% include "printers/nav.html" %}
+{% endblock %}
+{% block content %}
+<h3>{{ printerlist }} printers</h3>
+<ul>	
+	{% for p in printerlist.printer.all %}
+<li><a href="/printers/printer_details/{{ p.id }}">{{ p.description }}</a></li>
+	{% endfor %}
+</ul>
+<table id="formset" class="form">
+    <thead><tr>
+		<td>
+			<form action="/printers/edit_printerlist/{{printerlist.id}}/" method="GET">{% csrf_token %}
+				<button type="submit" class="btn primary">Edit List</button>
+			</form>
+		</td>
+		<td>&nbsp;&nbsp;&nbsp;</td>
+		
+		<td>
+			<form action="/printers/del_printer/{{printerlist.id}}" method="GET">{% csrf_token %}
+	    		<button type="submit" class="btn-danger">Delete List</button>
+			</form>	
+		</td>
+	
+</tr></thead>
+{% endblock %}

@@ -1,11 +1,13 @@
 from django import forms
 from models import *
 
-class PrinterGroupForm(forms.ModelForm):
+class PrinterListForm(forms.ModelForm):
     class Meta:
-        model = PrinterGroup
+        model = PrinterList
+        
 
 class PrinterForm(forms.ModelForm):
     class Meta:
         model = Printer
+        
         

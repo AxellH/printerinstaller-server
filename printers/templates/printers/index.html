@@ -1,10 +1,33 @@
-<h1><p><a href="/admin/">Admin</a></p></h1>
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block nav %}
+{% include "printers/nav.html" %}
+{% endblock %}
+
+{% block content %}
+<h4>Printer Lists</h4>
 {% if groups %}
     <ul>
-    {% for g in groups %}
-        <li><a href="/printers/{{ g.name }}">{{ g.name }}</a></li>
+    {% for g in groups %}	
+		<li><a href="/printers/printerlist_details/{{ g.id }}">{{ g.name }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
     <p>No gropus are available.</p>
 {% endif %}
+<h4>Printers</h4>
+{% if printers %}
+    <ul>
+    {% for p in printers %}
+		{% if p.description %}
+			<li><a href="/printers/printer_details/{{ p.id }}">{{ p.description }}</a></li>
+		{% else %}
+			<li><a href="/printers/printer_details/{{ p.id }}">{{ p.name }}</a></li>
+		{% endif %}
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No gropus are available.</p>
+{% endif %}
+{% endblock %}

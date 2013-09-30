@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block nav %}
+{% include "printers/nav.html" %}
+{% endblock %}
+{% block content %}
+<h3>{{ printer }}</h3>
+<ul>
+	Name: {{ printer.name }}</br>
+	URL:  {{ printer.url }}</br> 
+	{% for o in printer.option_set.all %}
+	option: {{ o.option }}</br>
+	{% endfor %}
+</ul>
+<table id="formset" class="form">
+    <thead><tr>
+		<td>
+			<form action="/printers/edit_printer/{{printer.id}}/" method="GET">{% csrf_token %}
+				<button type="submit" class="btn primary">Edit Printer</button>
+			</form>
+		</td>
+		<td>&nbsp;&nbsp;&nbsp;</td>
+		
+		<td>
+			<form action="/printers/del_printer/{{printer.id}}" method="GET">{% csrf_token %}
+	    		<button type="submit" class="btn-danger">Delete Printer</button>
+			</form>	
+		</td>
+	
+</tr></thead>
+	
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block nav %}
+{% include "printers/nav.html" %}
+{% endblock %}
+
+{% load bootstrap_toolkit %}
+{% block content %}
+<h1>Edit Printer List</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    <form action="/printers/edit_printerlist/{{printerlist.id}}/" method="POST">{% csrf_token %}
+        <table>	
+            {{ form|as_bootstrap }}
+        </table>
+        <p><button type="submit" class="btn primary">Save</button></p>
+    </form>
+{% endblock %}

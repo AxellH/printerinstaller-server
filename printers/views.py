@@ -4,31 +4,102 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, re
 from django.template import RequestContext, Template, Context, loader
 from django.template.loader import get_template
 from django.core import serializers
+from django.forms.models import model_to_dict 
+from plistlib import writePlistToString
 
 from printers.models import *
-import urllib2
-import plistlib
-import json
+from forms import *
+
 
 @login_required(redirect_field_name='')
 def index(request):
-    #show table with printer groups
+    #show list of printers and groups
     groups = PrinterList.objects.all()
-    context = {'groups': groups,}
+    printers = Printer.objects.all()
+    context = {'groups': groups,'printers' : printers}
     return render(request, 'printers/index.html', context)
-   
+
+
+###########################
+######  Printer ###########
+###########################
+@login_required(redirect_field_name='')
+def printer_details(request, id):
+    printer = get_object_or_404(Printer, pk=id)
+    return render(request, 'printers/printer_details.html', {'printer': printer})
+
+@login_required(redirect_field_name='')
+def add_printer(request):
+    if request.method == 'POST':
+        form = PrinterForm(request.POST)
+        if form.is_valid():
+            new_printer = form.save(commit=False)
+            new_printer.save()
+            return redirect('printers.views.printer_details', new_printer.id)
+    else:
+        form = PrinterForm()
+    return render_to_response('printers/add_printer.html', {'form': form,}, context_instance=RequestContext(request))
     
+@login_required(redirect_field_name='')
+def edit_printer(request, printer_id):
+    printer = Printer.objects.get(id=printer_id)  
+    if request.POST:
+        form = PrinterForm(request.POST,instance=printer)
+        if form.is_valid():
+            form.save()
+            return redirect('printers.views.printer_details', printer.id)
+    else:
+        form = PrinterForm(instance=printer)
+    return render_to_response('printers/edit_printer.html', {'form': form,'printer':printer}, context_instance=RequestContext(request))
     
-def detail(request, printerlist_id):
-    pl = get_object_or_404(PrinterList, pk=printerlist_id)
-    output = pl.printer.all()
-    return render(request, 'printers/details.html', {'pl': output})
-   
-        
-def getlist(request, printerlist_name):       
+@login_required(redirect_field_name='')
+def del_printer(request, id):
+    printer = get_object_or_404(Printer, pk=id)
+    printer.delete()
+    return redirect('printers.views.index')
+    
+  
+########################################
+######  Printer List Methods ###########
+########################################  
+@login_required(redirect_field_name='')
+def add_printerlist(request):
+    if request.method == 'POST':
+        form = PrinterListForm(request.POST)
+        if form.is_valid():
+            printerlist = form.save(commit=True)
+            printerlist.save()
+            return redirect('printers.views.printerlist_details', printerlist.id)
+    else:
+        form = PrinterListForm()
+    return render_to_response('printers/add_printerlist.html', {'form': form,}, context_instance=RequestContext(request))
+    
+@login_required(redirect_field_name='')
+def printerlist_details(request, id):
+    printerlist = get_object_or_404(PrinterList, pk=id)
+    return render(request, 'printers/printerlist_details.html', {'printerlist': printerlist})
+
+@login_required(redirect_field_name='')
+def edit_printerlist(request, printerlist_id):
+    printerlist = PrinterList.objects.get(id=printerlist_id)  
+    if request.POST:
+        form = PrinterListForm(request.POST,instance=printerlist)
+        if form.is_valid():
+            form.save()
+            return redirect('printers.views.printerlist_details', printerlist.id)
+    else:
+        form = PrinterListForm(instance=printerlist)
+    return render_to_response('printers/edit_printerlist.html', {'form': form,'printerlist':printerlist}, context_instance=RequestContext(request))
+    
+
+
+
+## This is the request that returns the plist for the Printer-Installer.app
+## it should be the only area that requires no login
+def getlist(request, name):       
     pl = PrinterList.objects.all()
     for listname in pl:
-        if listname.name == printerlist_name:
+        if listname.name == name:
             i = listname
     
     pl=i.printer.all()
@@ -54,9 +125,7 @@ def getlist(request, printerlist_name):
             d['options'] = addopt
             
         output.append(d)
-    
-    data = {'printerList':output}
-    
-    detail=plistlib.writePlistToString(data)
+        
+    detail=writePlistToString({'printerList':output})
     return HttpResponse(detail)
     
