@@ -1,7 +1,12 @@
 import datetime
 from django.utils import timezone
 from django.db import models
-   
+
+class Option(models.Model):
+    option = models.CharField(max_length=200,blank=True)
+    
+    def __unicode__(self):
+         return self.option 
                         
 class Printer(models.Model):   
     name = models.CharField(max_length=200)
@@ -11,6 +16,7 @@ class Printer(models.Model):
     ppd = models.CharField(max_length=200,blank=True)
     url = models.CharField(max_length=200)
     protocol = models.CharField(max_length=200)
+    option = models.ManyToManyField(Option,blank=True)
     
     def __unicode__(self):
             return self.name
@@ -20,17 +26,7 @@ class Printer(models.Model):
             return self.ppd
             return self.url
             return self.protocol
-    
-    # def get_fields(self):
-    #     return [(field.name, field.value_to_string(self)) for field in Printer._meta.fields]
 
-
-class Option(models.Model):
-    printer = models.ForeignKey(Printer)
-    option = models.CharField(max_length=200,blank=False)
-    
-    def __unicode__(self):
-         return self.option
 
 class PrinterList(models.Model):
     name = models.CharField(max_length=200)
@@ -39,7 +35,3 @@ class PrinterList(models.Model):
     def __unicode__(self):
         return self.name
         
-    def make_plist(self):
-        for i in self.printer.all():
-            out = i.name
-            
