@@ -7,27 +7,26 @@
 
 {% block content %}
 <h4>Printer Lists</h4>
-{% if groups %}
-    <ul>
-    {% for g in groups %}	
-		<li><a href="/printers/printerlist_details/{{ g.id }}">{{ g.name }}</a></li>
+{% if printerlists %}
+    {% for list in printerlists %}	
+		<li><a href={% url "printerlist_details" list.id %}>{{ list.name }}</a></li>
     {% endfor %}
-    </ul>
 {% else %}
-    <p>No gropus are available.</p>
+    <p>No printer lists are available.</br>
+		<li><a href={% url "add_printerlist" %}>Add List</a></li>
+	</p>
+	
 {% endif %}
 <h4>Printers</h4>
 {% if printers %}
-    <ul>
-    {% for p in printers %}
-		{% if p.description %}
-			<li><a href="/printers/printer_details/{{ p.id }}">{{ p.description }}</a></li>
+    {% for printer in printers %}
+		{% if printer.description %}
+			<li><a href={% url "printer_details" printer.id %}>{{ printer.description }}</a></li>
 		{% else %}
-			<li><a href="/printers/printer_details/{{ p.id }}">{{ p.name }}</a></li>
+			<li><a href={% url "printer_details" printer.id %}>{{ printer.name }}</a></li>
 		{% endif %}
     {% endfor %}
-    </ul>
 {% else %}
-    <p>No gropus are available.</p>
+    <p>No printers are available.</p>
 {% endif %}
 {% endblock %}

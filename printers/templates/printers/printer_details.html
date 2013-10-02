@@ -4,33 +4,54 @@
 {% include "printers/nav.html" %}
 {% endblock %}
 {% block content %}
-
-	<b>  {{ printer.name }}</b></br>
-	<br>
-	<b>Description:</b>  {{ printer.description }}</br> 
-	<b>Location:</b>  {{ printer.location }}</br> 
-	</br> 
-	<b>URL:</b>  {{ printer.url }}</br>
-	<b>Protocol:</b>  {{ printer.protocol }}</br> 
-	</br> 
-	<b>Model:</b>  {{ printer.model }}</br> 
-	<b>PPD:</b>  {{ printer.PPD }}</br> 
-	{% for o in printer.option_set.all %}
-	<i><b>option:</b> {{ o.option }}</i></br>
-	{% endfor %}
-
-<table id="formset" class="form">
+<h3>{{ printer.name }}</h3>
+<table class="client_info table table-striped table-condensed table-bordered">
+    <tbody>
+		<tr>
+			<th>Description:</th>
+			<td>{{ printer.description }}</td>
+		</tr>
+		<tr>
+			<th>Location:</th>
+			<td>{{ printer.location }}</td>
+		</tr>
+		<tr>
+			<th>URL:</th>
+			<td>{{ printer.url }}</td>
+		</tr>
+		<tr>
+			<th>Protocol:</th>
+			<td>{{ printer.protocol }}</td>
+		</tr>
+		<tr>
+			<th>Model:</th>
+			<td>{{ printer.model }}</td>
+		</tr>
+		<tr>
+			<th>PPD:</th>
+			<td>{{ printer.PPD }}</td>
+		</tr>
+		{% for o in printer.option.all %}
+		<tr>
+			<th>option:</th>
+			<td>{{ o.option }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<br/>
+<table>
     <thead><tr>
 		<td>
-			<form action="/printers/edit_printer/{{printer.id}}/" method="GET">{% csrf_token %}
+			<form action={%url "edit_printer" printer.id%} method="GET">{% csrf_token %}
 				<button type="submit" class="btn primary">Edit Printer</button>
 			</form>
 		</td>
 		<td>&nbsp;&nbsp;&nbsp;</td>
 		
 		<td>
-			<form action="/printers/del_printer/{{printer.id}}" method="GET">{% csrf_token %}
-	    		<button type="submit" class="btn-danger">Delete Printer</button>
+			<form action={%url "del_printer" printer.id%} method="GET">{% csrf_token %}
+	    		<button type="submit" class="btn btn-danger">Delete Printer</button>
 			</form>	
 		</td>
 	

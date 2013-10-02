@@ -13,15 +13,15 @@
 <table id="formset" class="form">
     <thead><tr>
 		<td>
-			<form action="/printers/edit_printerlist/{{printerlist.id}}/" method="GET">{% csrf_token %}
+			<form action={%url "edit_printerlist" printerlist.id %} method="GET">{% csrf_token %}
 				<button type="submit" class="btn primary">Edit List</button>
 			</form>
 		</td>
 		<td>&nbsp;&nbsp;&nbsp;</td>
 		
 		<td>
-			<form action="/printers/del_printerlist/{{printerlist.id}}" method="GET">{% csrf_token %}
-	    		<button type="submit" class="btn-danger">Delete List</button>
+			<form action={%url "del_printerlist" printerlist.id %} method="GET">{% csrf_token %}
+	    		<button type="submit" class="btn btn-danger">Delete List</button>
 			</form>	
 		</td>
 	
