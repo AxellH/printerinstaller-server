@@ -3,3 +3,4 @@ settings.py
 printerinstaller.db
 *.old
 printerinstaller.wsgi
+server/static
