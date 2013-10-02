@@ -10,8 +10,8 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
-	<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css' />
-    <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href='https://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css' />
+    <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
     <style type="text/css">
       body {
         padding-top: 60px;
@@ -27,11 +27,8 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-  </head>
-
-  <body>
-
+</head>
+<body>
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
@@ -54,9 +51,9 @@
   			    <b class="caret"></b>
   			  </a>
   			  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-  			  	<li><a href="/printers/changepassword/">{% trans "Change password" %}</a></li>
-                <li><a href="/printers/admin/">Administraton</a></li>
-                <li><a href="/printers/logout/">{% trans "Log out" %}</a></li>
+  			  	<li><a href={% url "change_password" %}>{% trans "Change password" %}</a></li>
+                <li><a href={% url "admin:index" %}>Administraton</a></li>
+                <li><a href={% url "logout" %}>{% trans "Log out" %}</a></li>
   			  </ul>
   			</li>
   			
