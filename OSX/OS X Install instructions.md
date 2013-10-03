@@ -1,4 +1,4 @@
-*please see the README.txt at the root of this project for more general instructions*
+*please see the README.md at the root of this project for more general instructions*
 
 #OS X Setup#
 
@@ -13,7 +13,7 @@ and that is represented in the included httpd_printerinstaller.conf file with th
 
 the other primary change in this fork was to allow for multiple django-wsgi apps to be run side-by side hence the renaming of /static/ directive in the settings.py file to /static_printerinstaller/.  With that set you can Alias more than one set of static files properly.
 
-	Alias /static_printerinstaller/ */path/to/your/*printerinstaller_env/printerinstaller/static/
+	Alias /static_printerinstaller/ /path/to/your/printerinstaller_env/printerinstaller/static/
 
 ####To install (on 10.8 )####
 Edit printerinstaller.wsgi specifiying your virtualenv directory and place in 

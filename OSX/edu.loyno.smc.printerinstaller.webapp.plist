@@ -9,7 +9,7 @@
 		<string>/Library/Server/Web/Config/apache2/httpd_printerinstaller.conf</string>
 	</array>
 	<key>installationIndicatorFilePath</key>
-	<string>/usr/local/www/printerinstaller_env/printerinstaller/printerinstaller.wsgi</string>
+	<string>/Library/Server/Web/Data/webapps/printerinstaller.wsgi</string>
 	<key>launchKeys</key>
 	<array/>
 	<key>name</key>
