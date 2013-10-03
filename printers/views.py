@@ -29,7 +29,7 @@ def printer_details(request, id):
     return render(request, 'printers/printer_details.html', {'printer': printer})
 
 @login_required(redirect_field_name='')
-def add_printer(request):
+def printer_add(request):
     if request.method == 'POST':
         form = PrinterForm(request.POST)
         if form.is_valid():
@@ -48,7 +48,7 @@ def add_printer(request):
 
 
 @login_required(redirect_field_name='')
-def edit_printer(request, printer_id):
+def printer_edit(request, printer_id):
     printer=get_object_or_404(Printer, pk=printer_id)
     if request.POST:
         form = PrinterForm(request.POST,instance=printer)
@@ -65,7 +65,7 @@ def edit_printer(request, printer_id):
     return render_to_response('printers/edit_printer.html', {'form': form,'printer':printer}, context_instance=RequestContext(request))
     
 @login_required(redirect_field_name='')
-def del_printer(request, id):
+def printer_delete(request, id):
     printer = get_object_or_404(Printer, pk=id)
     if printer:
         printer.delete()
@@ -77,7 +77,7 @@ def del_printer(request, id):
 ######  Printer List Methods ###########
 ########################################  
 @login_required(redirect_field_name='')
-def add_printerlist(request):
+def printerlist_add(request):
     if request.method == 'POST':
         form = PrinterListForm(request.POST)
         if form.is_valid():
@@ -94,7 +94,7 @@ def printerlist_details(request, id):
     return render(request, 'printers/printerlist_details.html', {'printerlist': printerlist})
 
 @login_required(redirect_field_name='')
-def edit_printerlist(request, printerlist_id):
+def printerlist_edit(request, printerlist_id):
     printerlist = PrinterList.objects.get(id=printerlist_id)  
     if request.POST:
         form = PrinterListForm(request.POST,instance=printerlist)
@@ -106,25 +106,47 @@ def edit_printerlist(request, printerlist_id):
     return render_to_response('printers/edit_printerlist.html', {'form': form,'printerlist':printerlist}, context_instance=RequestContext(request))
     
 @login_required(redirect_field_name='')
-def del_printerlist(request, id):
+def printerlist_delete(request, id):
     p = get_object_or_404(PrinterList, pk=id)
     p.delete()
     return redirect('printers.views.index')
 
+########################################
+#########  Option Methods ##############
+########################################  
+@login_required(redirect_field_name='')
+def options_list(request):
+    options = Option.objects.all()
+    return render(request, 'printers/options_list.html', {'options': options})
 
+@login_required(redirect_field_name='')
+def options_add(request):
+    if request.method == 'POST':
+        form = OptionsForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('printers.views.options_list')
+    else:
+        form = OptionsForm()
+    return render_to_response('printers/add_option.html', {'form': form,}, context_instance=RequestContext(request))
+    
+    
+   
+@login_required(redirect_field_name='')
+def options_delete(request,id):
+    o = get_object_or_404(Option, pk=id)
+    o.delete()
+    return redirect('printers.views.options_list')
+    
 
 ## This is the request that returns the plist for the Printer-Installer.app
 ## it should be the only area that requires no login
 def getlist(request, name):       
-    pl = PrinterList.objects.all()
-    for listname in pl:
-        if listname.name == name:
-            i = listname
+    pl = get_object_or_404(PrinterList, name=name)    
+    printers=pl.printer.all()
+    plist = []
     
-    pl=i.printer.all()
-    output = []
-    
-    for p in pl:
+    for p in printers:
         d = {
         'printer':p.name,
         'url':p.url, 
@@ -143,8 +165,8 @@ def getlist(request, name):
         if addopt:
             d['options'] = addopt
             
-        output.append(d)
+        plist.append(d)
         
-    detail=writePlistToString({'printerList':output})
+    detail=writePlistToString({'printerList':plist})
     return HttpResponse(detail)
     

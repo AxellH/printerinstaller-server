@@ -13,10 +13,11 @@
     {% endfor %}
 {% else %}
     <p>No printer lists are available.</br>
-		<li><a href={% url "add_printerlist" %}>Add List</a></li>
+		<li><a href={% url "printerlist_add" %}>Add List</a></li>
 	</p>
-	
 {% endif %}
+</br>
+
 <h4>Printers</h4>
 {% if printers %}
     {% for printer in printers %}

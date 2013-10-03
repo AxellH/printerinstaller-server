@@ -1,9 +1,14 @@
 # Django settings for printerinstaller project.
 import os
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# set to false when testing using Django's built in web server
+# it will host Files on the subpath http://127.0.0.1:8000/printers/
+# if you're using anything with a WSGIScriptAlias directive set to true
+RUNNING_ON_APACHE=False
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -63,7 +68,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_DIR, 'static_printerinstaller')
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -108,10 +113,10 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'printerinstaller.urls'
+ROOT_URLCONF = 'server.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'printerinstaller.wsgi.application'
+WSGI_APPLICATION = 'server.wsgi.application'
 
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_DIR, 'templates'),

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block nav %}
+{% include "printers/nav.html" %}
+{% endblock %}
+
+{% block content %}
+{% if options %}
+<h3>Avaliable Options</h3>
+<table class="client_info table table-striped table-condensed table-bordered">
+    <tbody>
+    {% for o in options %}	
+		<tr>
+			<th>{{ o.option }}</th>
+			<td><a href={% url "options_delete" o.id %}>Remove</a></td>
+		</tr>	
+    {% endfor %}
+	</tbody>
+</table>
+{% else %}
+<h4>No options have been added yet</h4>
+{% endif %}
+<a href={% url "options_add" %}>Add Option</a>
+{% endblock %}

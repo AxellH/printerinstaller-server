@@ -5,17 +5,11 @@ from models import *
 class PrinterListForm(forms.ModelForm):
     class Meta:
         model = PrinterList
-    printer = forms.ModelMultipleChoiceField(queryset=Printer.objects.all(),widget = forms.CheckboxSelectMultiple)
+    printer = forms.ModelMultipleChoiceField(queryset=Printer.objects.all(),widget = forms.CheckboxSelectMultiple,required=False)
         
 class OptionsForm(forms.ModelForm):
     class Meta:
         model = Option
-        
-class PrinterForm_old(forms.ModelForm):
-    class Meta:
-        model = Printer
-    options = forms.ModelMultipleChoiceField(queryset=Option.objects.all(),widget = forms.CheckboxSelectMultiple)
-    
     
 class PrinterForm(forms.ModelForm):
     class Meta:

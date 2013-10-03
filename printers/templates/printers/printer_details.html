@@ -43,14 +43,14 @@
 <table>
     <thead><tr>
 		<td>
-			<form action={%url "edit_printer" printer.id%} method="GET">{% csrf_token %}
+			<form action={%url "printer_edit" printer.id%} method="GET">{% csrf_token %}
 				<button type="submit" class="btn primary">Edit Printer</button>
 			</form>
 		</td>
 		<td>&nbsp;&nbsp;&nbsp;</td>
 		
 		<td>
-			<form action={%url "del_printer" printer.id%} method="GET">{% csrf_token %}
+			<form action={%url "printer_delete" printer.id%} method="GET">{% csrf_token %}
 	    		<button type="submit" class="btn btn-danger">Delete Printer</button>
 			</form>	
 		</td>

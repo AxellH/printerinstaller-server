@@ -6,7 +6,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 if settings.RUNNING_ON_APACHE:
-    #The Apache WSGIScriptAlias handles the subpathing for us so here it's blank
+    #The Apache WSGIScriptAlias handles the subpathing so here it's blank
     sub_path = ''
 else:
     sub_path="printers/"
