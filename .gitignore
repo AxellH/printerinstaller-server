@@ -1,6 +1,6 @@
 *.pyc
+*.old
+.DS_Store
 settings.py
 printerinstaller.db
-*.old
-printerinstaller.wsgi
 server/static

@@ -1,9 +1,17 @@
 # Django settings for printerinstaller project.
 import os
 
-DEBUG = False
-TEMPLATE_DEBUG = DEBUG
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# When Changing this to False Make Sure to set ALLOWED_HOSTS below
+DEBUG = True
+
+# Hosts/domain names that are valid for this site; required if DEBUG is False
+# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
+# ALLOWED_HOSTS=['*'] would allow all access
+ALLOWED_HOSTS = []
+
+TEMPLATE_DEBUG = DEBUG
 
 # set to false when testing using Django's built in web server
 # it will host Files on the subpath http://127.0.0.1:8000/printers/
@@ -28,9 +36,7 @@ DATABASES = {
     }
 }
 
-# Hosts/domain names that are valid for this site; required if DEBUG is False
-# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

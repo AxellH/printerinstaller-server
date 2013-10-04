@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.db import models
 
 class Option(models.Model):
-    option = models.CharField(max_length=200,blank=True)
+    option = models.CharField(max_length=200,blank=True,unique=True)
     
     def __unicode__(self):
          return self.option 
