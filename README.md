@@ -2,12 +2,10 @@
 
 a basic django webserver interface for providing the printer list to the Printer-Installer.app
 
-</br>
 
 ##Auto Install Script
-An auto-insatll script for OS X Server.app 10.7 and above right click this link [Download](https://raw.github.com/eahrold/printerinstaller-server/devel/OSX/osx_auto_install.command)
-
-</br>
+For the simplest installation, run the osx_auto-insatll.command script located in the OSX folder, in the root of this repo.
+It's only for OS X Server.app 10.7 and above. 
 
 ##Quick Start
 
