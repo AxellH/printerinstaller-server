@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #set -xv
+export PATH="$PATH:/usr/local/bin:/usr/local/sbin:/Applications/Xcode.app/Contents/Developer/usr/bin"
 
 PROJECT_NAME='printerinstaller'
 PROJECT_SETTINGS_DIR="server"
