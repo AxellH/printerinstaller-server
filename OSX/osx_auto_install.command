@@ -90,7 +90,7 @@ check_ID(){
 
 install(){
 	local VEV=$(which virtualenv)
-	[[ -z "${VEV}" ]] && easy_install virturalenv
+	[[ -z "${VEV}" ]] && easy_install virtualenv
 	"${VEV}" "${VIR_ENV}"
 			
 	cd "${VIR_ENV}"
