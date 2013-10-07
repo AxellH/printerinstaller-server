@@ -1,9 +1,15 @@
-##Printer-Installer Server
+#Printer-Installer Server
 
 a basic django webserver interface for providing the printer list to the Printer-Installer.app
 
+</br>
 
-###Quick Start
+##Auto Install Script
+An auto-insatll script for OS X Server.app 10.7 and above right click this link [Download](https://raw.github.com/eahrold/printerinstaller-server/devel/OSX/osx_auto_install.command)
+
+</br>
+
+##Quick Start
 
 ###if you don't have virturalenv install it
 
@@ -26,7 +32,7 @@ a basic django webserver interface for providing the printer list to the Printer
 	[[ -n $GROUP_ID ]] && ((GROUP_ID++)) || GROUP_ID=400
 	
 	
-Set the user
+###Set the user
 
 	sudo dseditgroup -o create -n printerinstaller -i "$GROUP_ID" -n . printerinstaller
 	sudo dscl . create /Users/printerinstaller
@@ -70,5 +76,7 @@ If ultimatley running via WSGI module on Apache, using the subpath /printers, wh
 
 	RUNNING_ON_APACHE=True
 
+</br>
 ### Additional OS X setup
-[Server.app Setup](https://github.com/eahrold/printerinstaller-server/blob/devel/OSX/OS X Install instructions.md)
+Other tid-bits for OSX Server.app [Setup instructions](https://github.com/eahrold/printerinstaller-server/blob/devel/OSX/OS X Install instructions.md)
+
