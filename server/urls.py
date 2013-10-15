@@ -6,11 +6,11 @@ from django.contrib import admin
 admin.autodiscover()
 
 if settings.RUNNING_ON_APACHE:
-    #The Apache WSGIScriptAlias handles the subpathing so here it's blank
     sub_path = ''
-else:
-    sub_path="printers/"
-    
+else:        
+    sub_path = settings.SUB_PATH
+
+
 urlpatterns = patterns('',
     url(r'^%sadmin/'% sub_path, include(admin.site.urls)),
     url(r'^%slogin/$'% sub_path, 'django.contrib.auth.views.login',name='login'),

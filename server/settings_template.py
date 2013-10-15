@@ -1,22 +1,22 @@
-# Django settings for printerinstaller project.
+# Django settings for munkiwebadmin project.
 import os
 
-PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# When Changing this to False Make Sure to set ALLOWED_HOSTS below
-DEBUG = True
-
-# Hosts/domain names that are valid for this site; required if DEBUG is False
-# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-# ALLOWED_HOSTS=['*'] would allow all access
-ALLOWED_HOSTS = []
-
-TEMPLATE_DEBUG = DEBUG
-
-# set to false when testing using Django's built in web server
-# it will host Files on the subpath http://127.0.0.1:8000/printers/
-# if you're using anything with a WSGIScriptAlias directive set to true
+## Set this to true if you're running on Apache via wsgi module
 RUNNING_ON_APACHE=False
+
+## set this to the subpath you plan on running 
+## make sure to include a trailing slash (e.g. munkiwebadmin/ )
+RUN_ON_SUBPATH=[True,'printers/']
+
+if RUN_ON_SUBPATH[0]:
+    SUB_PATH = RUN_ON_SUBPATH[1]
+else:
+    SUB_PATH=''
+
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+ALLOWED_HOSTS = []
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -36,7 +36,9 @@ DATABASES = {
     }
 }
 
-
+# Hosts/domain names that are valid for this site; required if DEBUG is False
+# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
+ALLOWED_HOSTS = []
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -77,8 +79,11 @@ MEDIA_URL = ''
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 # URL prefix for static files.
-# Example: "http://example.com/static/", "http://static.example.com/"
-STATIC_URL = '/static_printerinstaller/'
+# Example: "http://media.lawrence.com/static/"
+if RUNNING_ON_APACHE == True:
+    STATIC_URL = '/static_printerinstaller/'
+else:
+    STATIC_URL = os.path.join('/',SUB_PATH,'/static/')
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -88,8 +93,9 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_DIR, 'site_static'),
 )
 
-LOGIN_URL='/printers/login/'
-LOGIN_REDIRECT_URL='/printers/'
+LOGIN_URL='/'+SUB_PATH+'login/'
+LOGOUT_URL='/'+SUB_PATH+'logout/'
+LOGIN_REDIRECT_URL='/'+SUB_PATH
 
 # List of finder classes that know how to find static files in
 # various locations.
