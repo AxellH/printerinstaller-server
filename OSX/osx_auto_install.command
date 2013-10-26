@@ -13,14 +13,15 @@ USER_NAME='printerinstaller'
 GROUP_NAME='printerinstaller'
 APACHE_SUBPATH='printers'
 
+VIRENV_NAME='printerinstaller_env'
+## you only need to set one of the following two requirements...
+DJANGO_REQUIREMENTS_FILE="setup/requirements.txt"
+DJANGO_REQUIREMENTS=(Django django-bootstrap-toolkit)
+
 OSX_CONF_FILE_DIR="OSX"
 OSX_WEBAPP_PLIST='edu.loyno.smc.printerinstaller.webapp.plist'
 APACHE_CONFIG_FILE='httpd_printerinstaller.conf'
 WSGI_FILE='printerinstaller.wsgi'
-
-VIRENV_NAME='printerinstaller_env'
-DJANGO_REQUIREMENTS_FILE="setup/requirements.txt"
-DJANGO_REQUIREMENTS=(Django django-bootstrap-toolkit)
 
 OSX_SERVER_WSGI_DIR="/Library/Server/Web/Data/WebApps/"
 OSX_SERVER_APACHE_DIR="/Library/Server/Web/Config/apache2/"
@@ -39,11 +40,11 @@ pre_condition_test(){
 custom_config(){
 	echo running custom configurations
 }
+
 make_user_and_group(){
 	cecho bold "Checking user and group..."
 	local USER_EXISTS=$(dscl . list /Users | grep -c "${USER_NAME}")
 	local GROUP_EXISTS=$(dscl . list /Groups | grep -c "${GROUP_NAME}")
-	
 	
 	if [ $USER_EXISTS -eq 0 ]; then
 		cecho bold "Creating user ${USER_NAME}..."
@@ -53,10 +54,9 @@ make_user_and_group(){
 		dscl . create /Users/"${USER_NAME}" passwd *
 		dscl . create /Users/"${USER_NAME}" UniqueID "${USER_ID}"
 	else
-		cecho bold "User ${GROUP_NAME} already exists, skipping..."
+		cecho bold "User ${USER_NAME} already exists, skipping..."
 	fi
 
-	
 	if [ $GROUP_EXISTS -eq 0 ]; then
 		cecho bold "Creating user ${USER_NAME}..."
 		GROUP_ID=$(check_ID Groups PrimaryGroupID)
@@ -71,30 +71,6 @@ make_user_and_group(){
 	dscl . create /Users/"${USER_NAME}" PrimaryGroupID "${GROUP_ID}"
 }
 
-check_ID(){
-	# $1 is the dscl path and $2 is the Match
-	local ID=$(/usr/bin/dscl . list /$1 $2 | awk '{print $2}'| grep '[4][0-9][0-9]'| sort| tail -1)
-	[[ -n $ID ]] && ((ID++)) || ID=400
-	
-	
-	while true; do
-		local IDCK=$(/usr/bin/dscl . list /$1 $2 | awk '{print $2}'| grep -c ${ID})
-		if [ $IDCK -eq 0 ]; then
-			break
-		else
-			cecho alert "That %2 is in use"
-			read -e -p "Please specify another (press c to cancel autoinstll script):" ID
-		fi
-	done
-	
-	if [ "${ID}" == "c" ] ; then
-		cecho alert "exiting script."
-		exit 1
-	fi
-	echo $ID
-	 
-}
-
 install(){
 	local VEV=$(which virtualenv)
 	[[ -z "${VEV}" ]] && easy_install virtualenv
@@ -102,8 +78,13 @@ install(){
 			
 	cd "${VIR_ENV}"
 	
+	
 	if [ ! -d "${VIR_ENV}/${PROJECT_NAME}" ]; then
-		git clone -b "${GIT_BRANCH}" --single-branch "${GIT_REPO}" ./"${PROJECT_NAME}"
+		if [ -n "${GIT_BRANCH}" ];then 
+			git clone -b "${GIT_BRANCH}" --single-branch "${GIT_REPO}" ./"${PROJECT_NAME}"
+		else
+			git clone "${GIT_REPO}" ./"${PROJECT_NAME}"
+		fi
 	else
 		cd "${PROJECT_NAME}"
 		git checkout "${GIT_BRANCH}"
@@ -134,7 +115,7 @@ configure(){
 	local SETTINGS_FILE="${PROJECT_SETTINGS_DIR}settings.py"
 	cecho purple "Now we'll do some basic configuring to the settings.py file"
 	
-	local _seckey=$(LC_CTYPE=C tr -dc A-Za-z0-9_\!\@\#\$\%\^\&\*\(\)-+= < /dev/urandom | head -c 50 | xargs)
+	local _seckey=$(LC_CTYPE=C tr -dc A-Za-z0-9_\!\@\#\$\%\^\*\(\)-+= < /dev/urandom | head -c 50 | xargs)
 	ised "SECRET_KEY" "SECRET_KEY = '${_seckey}'" "${SETTINGS_FILE}"
 	
 	while true; do
@@ -235,6 +216,29 @@ set_permissions(){
 	chown -R "${USER_NAME}":"${GROUP_NAME}" "${VIR_ENV}"
 }
 
+check_ID(){
+	# $1 is the dscl path and $2 is the Match
+	local ID=$(/usr/bin/dscl . list /$1 $2 | awk '{print $2}'| grep '[4][0-9][0-9]'| sort| tail -1)
+	[[ -n $ID ]] && ((ID++)) || ID=400
+		
+	while true; do
+		local IDCK=$(/usr/bin/dscl . list /$1 $2 | awk '{print $2}'| grep -c ${ID})
+		if [ $IDCK -eq 0 ]; then
+			break
+		else
+			cecho alert "That %2 is in use"
+			read -e -p "Please specify another (press c to cancel autoinstll script):" ID
+		fi
+	done
+	
+	if [ "${ID}" == "c" ] ; then
+		cecho alert "exiting script."
+		exit 1
+	fi
+	echo $ID
+	 
+}
+
 cecho(){	
 	case "$1" in
 		red|alert) local COLOR=$(printf "\\e[1;31m");;
@@ -256,7 +260,6 @@ cecho(){
 	local RESET=$(printf "\\e[0m")	
 	echo "${COLOR}${MESSAGE}${RESET} ${3}"	
 }
-
 
 cread(){	
 	case "$1" in
@@ -283,8 +286,7 @@ cread(){
 
 eval_dir(){	 
 # pass the name of the variable you want to eval
-# so you would pass MYVAR rather than $MYVAR
-	
+# so you would pass MYVAR rather than $MYVAR	
 	eval local __myvar=${!1} 2>/dev/null
 	if [ $? == 0 ]; then
 			
@@ -297,7 +299,6 @@ eval_dir(){
 		return 1
 	fi
 }
-
 
 ised(){
 	sed -i "" -e "s;^${1}.*;${2};" "${3}"
@@ -348,11 +349,11 @@ __main__(){
 	fi
 	
 	while true; do
+		echo ""
 		cecho question "Where Would you like to install the Virtual Environment?"
-		
 		if [ "${OSX_SERVER_INSTALL}" == true ]; then
-			echo "(Leave blank for: ${OSX_SERVER_SITES_DEFAULT})"
- 			cread purple "Set Path: " T_VIR_ENV
+			cecho question "Defaults to:" "${OSX_SERVER_SITES_DEFAULT}"
+ 			cread purple "Set Path:" T_VIR_ENV
 			if [ ! -z "${T_VIR_ENV}" ]; then
 				VIR_ENV="${T_VIR_ENV}"
 			else
@@ -369,9 +370,8 @@ __main__(){
 			if [ -d  "${VIR_ENV}" ]; then
 				VIR_ENV="${VIR_ENV}${VIRENV_NAME}"
 				eval_dir VIR_ENV	
-				cecho question "We will create a virtual environment at this path: "
-				echo "${VIR_ENV}"
-				cread question "Is this Correct [y/n/c]? " yesno
+				cecho question "We will create a virtual environment at this path:" "${VIR_ENV}"
+				cread question "Correct [y/n]? " yesno
 				if [[ $REPLY =~ ^[Yy]$ ]];then
 				    	break
 				elif [[ $REPLY =~ ^[Cc]$ ]];then

@@ -6,28 +6,51 @@
 {% endblock %}
 
 {% block content %}
+<table class="client_info table table-striped table-condensed table-bordered">
 <h4>Printer Lists</h4>
+<tbody>
 {% if printerlists %}
-    {% for list in printerlists %}	
-		<li><a href={% url "printerlist_details" list.id %}>{{ list.name }}</a></li>
+    {% for list in printerlists %}
+	<tr>	
+		<th><a href={% url "printerlist_details" list.id %}>{{ list.name }}</a></th>
+		<td><a href={% url "printerlist_details" list.id %}>number of printers in list: {{list.printer.count}}</a>
+		<td><a href={% url "printerlist_delete" list.id %}>Remove</a></td>
+	</tr>
     {% endfor %}
 {% else %}
     <p>No printer lists are available.</br>
-		<li><a href={% url "printerlist_add" %}>Add List</a></li>
-	</p>
 {% endif %}
+</tbody>
+</table>
+<a href={% url "printerlist_add" %}>Add List</a>
 </br>
-
+</br>
+<table class="client_info table table-striped table-condensed table-bordered">
 <h4>Printers</h4>
+<tbody>
 {% if printers %}
+<th>Name</th>
+<th>Description</th>
+<th>Model</th>
+<th>Location</th>
+<th>Option Count</th>
+<td></td>
     {% for printer in printers %}
-		{% if printer.description %}
-			<li><a href={% url "printer_details" printer.id %}>{{ printer.description }}</a></li>
-		{% else %}
-			<li><a href={% url "printer_details" printer.id %}>{{ printer.name }}</a></li>
-		{% endif %}
+	<tr>
+		<th><a href={% url "printer_details" printer.id %}>{{ printer.name }}</a></th>
+		<td>{{ printer.description }}</td>
+		<td>{{ printer.model }}</td>
+		<td>{{ printer.location }}</td>
+		<td>Number of Options: {{ printer.option.count }}</td>
+		<td><a href={% url "printer_delete" printer.id %}>Remove</a></td>
+		
+	</tr>
     {% endfor %}
 {% else %}
     <p>No printers are available.</p>
 {% endif %}
+</tbody>
+</table>
+<a href={% url "printer_add" %}>Add Printer</a>
+
 {% endblock %}

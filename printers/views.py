@@ -40,7 +40,7 @@ def printer_add(request):
                  printer.option.create(option=new_option)
             
             printer.save()
-            return redirect('printers.views.printer_details', printer.id)            
+            return redirect('printers.views.index')            
     else:
         form = PrinterForm()
         
@@ -58,7 +58,7 @@ def printer_edit(request, printer_id):
             if new_option:
                  printer.option.create(option=new_option)            
                  printer.save()
-        return redirect('printers.views.printer_details', printer.id)            
+        return redirect('printers.views.index')            
     else:
         form = PrinterForm(instance=printer)
         
