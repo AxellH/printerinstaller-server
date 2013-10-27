@@ -4,3 +4,5 @@
 settings.py
 printerinstaller.db
 server/static
+serverprinter-installer.log
+server/files/ppds/*

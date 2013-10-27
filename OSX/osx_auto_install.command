@@ -147,11 +147,13 @@ configure(){
 	done
 	
 	while true;do
-	cread question "Allow All Hosts [y/n]? " yesno
+	HOST_NAME=`scutil --get HostName`
+	cread question "Set ALLOWED_HOST as this: $HOST_NAME ? " yes/no
 	if [[ $REPLY =~ ^[Yy]$ ]];then
-		ised "ALLOWED_HOSTS =" "ALLOWED_HOSTS = ['*']" "${SETTINGS_FILE}"
+		ised "ALLOWED_HOSTS =" "ALLOWED_HOSTS = ['${HOST_NAME}']" "${SETTINGS_FILE}"
 		break
 	elif	[[ $REPLY =~ ^[Nn]$ ]]; then
+		echo "you will need to edit this in the settings.py file once we're done."
 		break
 	fi	
 	done

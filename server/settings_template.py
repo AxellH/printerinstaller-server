@@ -2,10 +2,10 @@
 import os
 
 ## Set this to true if you're running on Apache via wsgi module
-RUNNING_ON_APACHE=False
+RUNNING_ON_APACHE=True
 
 ## set this to the subpath you plan on running 
-## make sure to include a trailing slash (e.g. munkiwebadmin/ )
+## make sure to include a trailing slash (e.g. printers/ )
 RUN_ON_SUBPATH=[True,'printers/']
 
 if RUN_ON_SUBPATH[0]:
@@ -14,9 +14,9 @@ else:
     SUB_PATH=''
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
-ALLOWED_HOSTS = []
+
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -65,25 +65,30 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = os.path.join(PROJECT_DIR, 'files')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
-MEDIA_URL = ''
+MEDIA_URL = "http://localhost/"
+
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+STATIC_ROOT = os.path.join(PROJECT_DIR, '/static/')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 if RUNNING_ON_APACHE == True:
     STATIC_URL = '/static_printerinstaller/'
+    
 else:
     STATIC_URL = os.path.join('/',SUB_PATH,'/static/')
+    
+    
+    
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -169,13 +174,33 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'file': {
+                    'level':
+                        'ERROR',
+                    'class':
+                        'logging.FileHandler',
+                    'formatter':
+                        'verbose',
+                    'filename':
+                        'logs/printer-installer.log'
         }
+    },
+    'formatters': {
+            'verbose': {
+                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            },
+            'simple': {
+                'format':
+                    '%(levelname)s %(message)s'
+            },
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['mail_admins','file'],
             'level': 'ERROR',
             'propagate': True,
         },
+        
     }
 }

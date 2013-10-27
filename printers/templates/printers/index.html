@@ -12,7 +12,7 @@
 {% if printerlists %}
     {% for list in printerlists %}
 	<tr>	
-		<th><a href={% url "printerlist_details" list.id %}>{{ list.name }}</a></th>
+		<th><a href={% url "printerlist_edit" list.id %}>{{ list.name }}</a></th>
 		<td><a href={% url "printerlist_details" list.id %}>number of printers in list: {{list.printer.count}}</a>
 		<td><a href={% url "printerlist_delete" list.id %}>Remove</a></td>
 	</tr>
@@ -33,17 +33,18 @@
 <th>Description</th>
 <th>Model</th>
 <th>Location</th>
+<th>PPD File</th>
 <th>Option Count</th>
 <td></td>
     {% for printer in printers %}
 	<tr>
-		<th><a href={% url "printer_details" printer.id %}>{{ printer.name }}</a></th>
+		<th><a href={% url "printer_edit" printer.id %}>{{ printer.name }}</a></th>
 		<td>{{ printer.description }}</td>
 		<td>{{ printer.model }}</td>
 		<td>{{ printer.location }}</td>
+		<td>{{ printer.ppd_file.url}}</td>
 		<td>Number of Options: {{ printer.option.count }}</td>
 		<td><a href={% url "printer_delete" printer.id %}>Remove</a></td>
-		
 	</tr>
     {% endfor %}
 {% else %}

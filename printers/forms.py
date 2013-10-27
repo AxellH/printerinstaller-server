@@ -14,7 +14,8 @@ class OptionsForm(forms.ModelForm):
 class PrinterForm(forms.ModelForm):
     class Meta:
         model = Printer
-          
+    
+    ppd_file = forms.FileField(label='choose a ppd', required=False)
     new_option = forms.CharField(max_length=100,required=False)
     option = forms.ModelMultipleChoiceField(queryset=Option.objects.all(),widget = forms.CheckboxSelectMultiple,required=False)
     

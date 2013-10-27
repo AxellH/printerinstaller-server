@@ -14,6 +14,8 @@ class Printer(models.Model):
     location = models.CharField(max_length=200,blank=True)
     model = models.CharField(max_length=200)
     ppd = models.CharField(max_length=200,blank=True)
+    ppd_file = models.FileField(upload_to='ppds/')
+
     url = models.CharField(max_length=200)
     protocol = models.CharField(max_length=200)
     option = models.ManyToManyField(Option,blank=True)

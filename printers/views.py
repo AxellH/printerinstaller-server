@@ -31,10 +31,9 @@ def printer_details(request, id):
 @login_required(redirect_field_name='')
 def printer_add(request):
     if request.method == 'POST':
-        form = PrinterForm(request.POST)
+        form = PrinterForm(request.POST,request.FILES)
         if form.is_valid():
             printer = form.save(commit=True)
-            
             new_option = form.cleaned_data['new_option']
             if new_option:
                  printer.option.create(option=new_option)
@@ -51,7 +50,7 @@ def printer_add(request):
 def printer_edit(request, printer_id):
     printer=get_object_or_404(Printer, pk=printer_id)
     if request.POST:
-        form = PrinterForm(request.POST,instance=printer)
+        form = PrinterForm(request.POST,request.FILES,instance=printer)
         if form.is_valid(): 
             form.save()            
             new_option = form.cleaned_data['new_option']
@@ -83,7 +82,7 @@ def printerlist_add(request):
         if form.is_valid():
             printerlist = form.save(commit=True)
             printerlist.save()
-            return redirect('printers.views.printerlist_details', printerlist.id)
+            return redirect('printers.views.index')            
     else:
         form = PrinterListForm()
     return render_to_response('printers/add_printerlist.html', {'form': form,}, context_instance=RequestContext(request))
@@ -100,7 +99,7 @@ def printerlist_edit(request, printerlist_id):
         form = PrinterListForm(request.POST,instance=printerlist)
         if form.is_valid():
             form.save()
-            return redirect('printers.views.printerlist_details', printerlist.id)
+            return redirect('printers.views.index')            
     else:
         form = PrinterListForm(instance=printerlist)
     return render_to_response('printers/edit_printerlist.html', {'form': form,'printerlist':printerlist}, context_instance=RequestContext(request))
@@ -153,7 +152,7 @@ def getlist(request, name):
         'description':p.description,
         'location':p.location,
         'model':p.model,
-        'ppd':p.ppd,
+        'ppd':p.ppd_file.url,
         'protocol':p.protocol,
         }
         

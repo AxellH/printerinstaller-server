@@ -9,7 +9,7 @@
 {% block content %}
 <h3>Edit {{printer.name}}</h3>
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-    <form action={%url "printer_edit" printer.id %} method="POST">{% csrf_token %}
+    <form action={%url "printer_edit" printer.id %} method="POST" enctype="multipart/form-data">{% csrf_token %}
         <table>	
             {{ form|as_bootstrap }}
         </table>

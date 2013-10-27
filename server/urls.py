@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.conf import settings
+from django.conf.urls.static import static
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -19,3 +20,5 @@ urlpatterns = patterns('',
     url(r'^%schangepassword/done/$'% sub_path, 'django.contrib.auth.views.password_change_done'),
     url(r'^%s'% sub_path, include('printers.urls'),name='home'),
 )
+
+# if settings.DEBUG:+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
