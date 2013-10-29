@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block nav %}
+{% include "printers/nav.html" %}
+{% endblock %}
+
+{% block content %}
+<table class="client_info table table-striped table-condensed table-bordered">
+<tbody>
+{% if apps %}
+	<tr>
+		<td>app</td>
+		<td>Version</td>
+		<td>download link</td>
+		<td>signature</td>
+		<td>is active?</td>
+		<td></td>
+	</tr>
+    {% for a in apps %}
+	<tr>	
+		<th><a href=./{{ a.application}}/appcast.xml>{{ a.application }}</a></th>
+		<th>{{ a.version }}</th>
+		<th><a href={{ a.update.url }}>{{a.update.name}}</a></th>
+		<td>{{ a.dsa_signature }}</td>
+		<th>{{ a.active }}</th>
+		<th><a href={% url "admin:index" %}sparkle/version/{{a.id}}>Edit</a></th>
+	</tr>
+    {% endfor %}
+{% else %}
+    <p>Currently Not Managing Updates</br>
+{% endif %}
+</tbody>
+</table>
+
+{% endblock %}

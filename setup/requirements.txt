@@ -1,2 +1,4 @@
 Django
 django-bootstrap-toolkit
+markdown
+django-sparkle
