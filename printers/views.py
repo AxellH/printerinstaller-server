@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, re
 from django.template import RequestContext, Template, Context, loader
 from django.template.loader import get_template
 from django.forms.models import inlineformset_factory
+from django.conf import settings
 
 from plistlib import writePlistToString
 
@@ -143,16 +144,23 @@ def options_delete(request,id):
 def getlist(request, name):       
     pl = get_object_or_404(PrinterList, name=name)    
     printers=pl.printer.all()
+    
+    
     plist = []
     
     for p in printers:
+        if(p.ppd_file):
+            ppdurl=p.ppd_file.url
+        else:
+            ppdurl=''
+            
         d = {
         'printer':p.name,
         'url':p.url, 
         'description':p.description,
         'location':p.location,
         'model':p.model,
-        'ppd':p.ppd_file.url,
+        'ppd':ppdurl,
         'protocol':p.protocol,
         }
         
@@ -166,6 +174,6 @@ def getlist(request, name):
             
         plist.append(d)
         
-    detail=writePlistToString({'printerList':plist})
+    detail=writePlistToString({'printerList':plist,'updateServer':settings.HOST_SPARKLE_UPDATES[1]})
     return HttpResponse(detail)
     

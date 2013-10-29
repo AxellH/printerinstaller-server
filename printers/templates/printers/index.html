@@ -23,6 +23,7 @@
 </tbody>
 </table>
 <a href={% url "printerlist_add" %}>Add List</a>
+
 </br>
 </br>
 <table class="client_info table table-striped table-condensed table-bordered">
@@ -42,7 +43,7 @@
 		<td>{{ printer.description }}</td>
 		<td>{{ printer.model }}</td>
 		<td>{{ printer.location }}</td>
-		<td>{{ printer.ppd_file.url}}</td>
+		<td>{% if printer.ppd_file %}{{ printer.ppd_file.url}}{% endif %}</td>
 		<td>Number of Options: {{ printer.option.count }}</td>
 		<td><a href={% url "printer_delete" printer.id %}>Remove</a></td>
 	</tr>

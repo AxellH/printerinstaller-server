@@ -13,7 +13,6 @@ class Printer(models.Model):
     description = models.CharField(max_length=200,blank=True)
     location = models.CharField(max_length=200,blank=True)
     model = models.CharField(max_length=200)
-    ppd = models.CharField(max_length=200,blank=True)
     ppd_file = models.FileField(upload_to='ppds/')
 
     url = models.CharField(max_length=200)
@@ -25,7 +24,6 @@ class Printer(models.Model):
             return self.description
             return self.location
             return self.model
-            return self.ppd
             return self.url
             return self.protocol
 

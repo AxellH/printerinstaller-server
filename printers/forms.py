@@ -15,7 +15,10 @@ class PrinterForm(forms.ModelForm):
     class Meta:
         model = Printer
     
-    ppd_file = forms.FileField(label='choose a ppd', required=False)
+    model=forms.CharField(max_length=100,label='Printer Model',help_text='As Listed with lpinfo -m')
+    name=forms.CharField(max_length=100,label='Priner Name',help_text='CUPS compliant name, No spaces or CAPS, must start with letter')
+    url=forms.CharField(max_length=100,label='Server HostName',help_text='Please Specify FQDN')
+    ppd_file = forms.FileField(label='PPD File', required=False)
     new_option = forms.CharField(max_length=100,required=False)
     option = forms.ModelMultipleChoiceField(queryset=Option.objects.all(),widget = forms.CheckboxSelectMultiple,required=False)
     
