@@ -8,13 +8,15 @@ RUNNING_ON_APACHE=True
 ## make sure to include a trailing slash (e.g. printers/ )
 RUN_ON_SUBPATH=[True,'printers/']
 
+HOST_SPARKLE_UPDATES=[True,'http://localhost/printers/sparkle/Printer-Installer/appcast.xml']
+
 if RUN_ON_SUBPATH[0]:
     SUB_PATH = RUN_ON_SUBPATH[1]
 else:
     SUB_PATH=''
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 
@@ -38,7 +40,7 @@ DATABASES = {
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -70,8 +72,8 @@ MEDIA_ROOT = os.path.join(PROJECT_DIR, 'files')
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
-MEDIA_URL = "http://localhost/"
-
+SVR_NAME = "http://127.0.0.1"
+MEDIA_URL = SVR_NAME + "/"
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -146,6 +148,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.markup',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -153,6 +156,9 @@ INSTALLED_APPS = (
     'bootstrap_toolkit',
     'printers',
 )
+
+if HOST_SPARKLE_UPDATES[0]:
+    INSTALLED_APPS = INSTALLED_APPS + ('sparkle',)
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 
@@ -183,7 +189,7 @@ LOGGING = {
                     'formatter':
                         'verbose',
                     'filename':
-                        'logs/printer-installer.log'
+                        PROJECT_DIR+'printer-installer.log'
         }
     },
     'formatters': {
