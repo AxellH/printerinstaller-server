@@ -144,8 +144,6 @@ def options_delete(request,id):
 def getlist(request, name):       
     pl = get_object_or_404(PrinterList, name=name)    
     printers=pl.printer.all()
-    
-    
     plist = []
     
     for p in printers:
