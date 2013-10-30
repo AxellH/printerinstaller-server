@@ -24,7 +24,7 @@
 		<th><a href={{ a.update.url }}>{{a.update.name}}</a></th>
 		<td>{{ a.dsa_signature }}</td>
 		<th>{{ a.active }}</th>
-		<th><a href={% url "admin:index" %}sparkle/version/{{a.id}}>Edit</a></th>
+		<th><a href={% url "appcast_edit" a.id %}>Edit</a></th>
 	</tr>
     {% endfor %}
 {% else %}
@@ -32,5 +32,6 @@
 {% endif %}
 </tbody>
 </table>
+<p><a href={% url "appcast_add" %}>Add Version</a>
 
 {% endblock %}

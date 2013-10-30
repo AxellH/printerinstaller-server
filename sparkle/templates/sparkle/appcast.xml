@@ -1,4 +1,4 @@
-{% load markup %}<?xml version="1.0" encoding="utf-8"?>
+{% load sparkle_markup %}<?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
     <channel>
         <title>{{ application.name }}</title>
@@ -9,7 +9,7 @@
             <item>
                 <title>{{ version.title }}</title>
 			    <description><![CDATA[
-                    {{ version.release_notes|markdown }}
+                    {{ version.release_notes|md2 }}
                 ]]>
                 </description>
                 <pubDate>{{ version.published|date:"r" }}</pubDate>

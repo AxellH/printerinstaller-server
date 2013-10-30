@@ -1,4 +1,4 @@
 Django
 django-bootstrap-toolkit
-markdown
-django-sparkle
+markdown2
+south

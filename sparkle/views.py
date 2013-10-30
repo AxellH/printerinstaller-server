@@ -1,7 +1,11 @@
-from django.shortcuts import render_to_response, get_object_or_404, render
+from django.shortcuts import render_to_response, get_object_or_404, render, redirect
 from django.contrib.sites.models import Site
+from django.template.loader import get_template
+from django.template import RequestContext, Template, Context, loader
 from django.contrib.auth.decorators import login_required, permission_required
-from sparkle.models import Application, Version, SystemProfileReport, SystemProfileReportRecord
+from forms import *
+from sparkle.models import *
+
 
 def appcast(request, name):
     """Generate the appcast for the given application while recording any system profile reports"""
@@ -30,3 +34,28 @@ def index(request):
     context = {'apps':apps,'site':site}
     
     return render(request, 'sparkle/index.html',context) 
+    
+@login_required(redirect_field_name='')
+def appcast_edit(request, appcast_id):
+    appcast=get_object_or_404(Version, pk=appcast_id)
+    if request.POST:
+        form = AppcastForm(request.POST,request.FILES,instance=appcast)
+        if form.is_valid(): 
+            form.save()            
+        return redirect('sparkle.views.index')            
+    else:
+        form = AppcastForm(instance=appcast)
+    return render_to_response('sparkle/appcast_edit.html', {'form': form,'appcast':appcast}, context_instance=RequestContext(request))
+    
+@login_required(redirect_field_name='')
+def appcast_add(request):
+    if request.POST:
+        form = AppcastForm(request.POST,request.FILES)
+        if form.is_valid():
+            appcast = form.save(commit=True)
+            appcast.save()            
+        return redirect('sparkle.views.index')            
+    else:
+        form = AppcastForm()
+    return render_to_response('sparkle/appcast_add.html', {'form': form,}, context_instance=RequestContext(request))
+
