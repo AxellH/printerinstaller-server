@@ -5,7 +5,7 @@ from sparkle import views as sviews
 
 urlpatterns = patterns('',
     url(r'^$', pviews.index, name='index'),
-    url(r'^sparkle/', sviews.index, name='su_index'),
+    url(r'^sparkle/$', sviews.index, name='su-index'),
     
     url(r'^printer/add/$', pviews.printer_add,{}, name='printer_add'),    
     url(r'^printer/edit/(?P<printer_id>\d+)/', pviews.printer_edit,{}, name='printer_edit'),
