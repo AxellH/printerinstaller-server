@@ -1,6 +1,8 @@
 # Django settings for munkiwebadmin project.
 import os
 
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 ## Set this to true if you're running on Apache via wsgi module
 RUNNING_ON_APACHE=True
 
@@ -8,6 +10,8 @@ RUNNING_ON_APACHE=True
 ## make sure to include a trailing slash (e.g. printers/ )
 RUN_ON_SUBPATH=[True,'printers/']
 
+## if set to true this Site will host the Sparkle AppCast for Printer-Installer server, otherwise
+## you can specify an alternate URL where you can point it to an different url.
 HOST_SPARKLE_UPDATES=[True,'http://localhost/printers/sparkle/Printer-Installer/appcast.xml']
 
 if RUN_ON_SUBPATH[0]:
@@ -15,7 +19,6 @@ if RUN_ON_SUBPATH[0]:
 else:
     SUB_PATH=''
 
-PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -25,6 +28,8 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+
+SPARKLE_PRIVATE_KEY_PATH=os.path.join(PROJECT_DIR, 'private','dsa_priv.pem')
 
 DATABASES = {
     'default': {
@@ -148,12 +153,13 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.markup',
+    #'django.contrib.markup',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
     'bootstrap_toolkit',
+    'south',
     'printers',
 )
 

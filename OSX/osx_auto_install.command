@@ -16,7 +16,7 @@ APACHE_SUBPATH='printers'
 VIRENV_NAME='printerinstaller_env'
 ## you only need to set one of the following two requirements...
 DJANGO_REQUIREMENTS_FILE="setup/requirements.txt"
-DJANGO_REQUIREMENTS=(Django django-bootstrap-toolkit)
+DJANGO_REQUIREMENTS=(Django django-bootstrap-toolkit, south, markdown2)
 
 OSX_CONF_FILE_DIR="OSX"
 OSX_WEBAPP_PLIST='edu.loyno.smc.printerinstaller.webapp.plist'

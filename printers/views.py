@@ -148,18 +148,18 @@ def getlist(request, name):
     
     for p in printers:
         if(p.ppd_file):
-            ppdurl=p.ppd_file.url
+            ppd_url=p.ppd_file.url
         else:
-            ppdurl=''
+            ppd_url=''
             
         d = {
-        'printer':p.name,
-        'url':p.url, 
+        'name':p.name,
+        'host':p.host,
+        'protocol':p.protocol,
         'description':p.description,
         'location':p.location,
         'model':p.model,
-        'ppd':ppdurl,
-        'protocol':p.protocol,
+        'ppd_url':ppd_url,
         }
         
         opts = p.option.all()

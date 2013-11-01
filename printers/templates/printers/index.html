@@ -43,7 +43,7 @@
 		<td>{{ printer.description }}</td>
 		<td>{{ printer.model }}</td>
 		<td>{{ printer.location }}</td>
-		<td>{% if printer.ppd_file %}{{ printer.ppd_file.url}}{% endif %}</td>
+		<td>{% if printer.ppd_file %}<a href={{ printer.ppd_file.url}}>{{ printer.ppd_file.url}}{% endif %}</td>
 		<td>Number of Options: {{ printer.option.count }}</td>
 		<td><a href={% url "printer_delete" printer.id %}>Remove</a></td>
 	</tr>

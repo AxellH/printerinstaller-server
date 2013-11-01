@@ -14,7 +14,7 @@ class Printer(models.Model):
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=200,blank=True)
     
-    url = models.CharField(max_length=200)
+    host = models.CharField(max_length=200)
     protocol = models.CharField(max_length=200)
     
     location = models.CharField(max_length=200,blank=True)
@@ -26,7 +26,7 @@ class Printer(models.Model):
     def __unicode__(self):
             return self.name
             return self.description
-            return self.url
+            return self.host
             return self.protocol
             return self.location
             return self.model
