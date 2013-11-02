@@ -4,6 +4,7 @@ import tempfile
 import shutil
 import plistlib
 from django.db import models
+from django.dispatch import receiver
 from django.conf import settings
 from sparkle.conf import SPARKLE_PRIVATE_KEY_PATH
 
@@ -114,3 +115,26 @@ class SystemProfileReportRecord(models.Model):
     
     def __unicode__(self):
         return u'%s: %s' % (self.key, self.value)
+        
+        
+@receiver(models.signals.post_delete, sender=Version)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+   if instance.update:
+        if os.path.isfile(instance.update.path):
+            os.remove(instance.update.path)
+
+@receiver(models.signals.pre_save, sender=Version)
+def auto_delete_file_on_change(sender, instance, **kwargs):
+    if not instance.pk:
+        return False
+    try:
+        old_file = Version.objects.get(pk=instance.pk).update
+        if not old_file:
+            return False
+    except Printer.DoesNotExist:
+        return False
+
+    new_file = instance.update
+    if not old_file == new_file:
+        if os.path.isfile(old_file.path):
+            os.remove(old_file.path)

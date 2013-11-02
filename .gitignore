@@ -8,3 +8,5 @@ serverprinter-installer.log
 server/static/*
 server/files/ppds/*
 server/files/sparkle/*
+sparkle/migrations/*
+printers/migrations/*

@@ -8,7 +8,7 @@
 {% load bootstrap_toolkit %}
 {% block content %}
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-    <form action={%url "appcast_edit" appcast.id %} method="POST" enctype="multipart/form-data">{% csrf_token %}
+    <form action={% url "version_add" %} method="POST" enctype="multipart/form-data">{% csrf_token %}
         <table>	
             {{ form|as_bootstrap }}
         </table>

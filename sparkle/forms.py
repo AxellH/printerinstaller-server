@@ -6,4 +6,7 @@ class AppcastForm(forms.ModelForm):
     class Meta:
         model = Version
         
+    application  = forms.ModelChoiceField(widget=forms.HiddenInput(),queryset=Application.objects.all())
+
+        
     
