@@ -7,14 +7,16 @@
 {% endblock %}
 
 {% block content %}
-<h4><a href={{version.update.url}}>Download lastest version of the Printer-Installer Client</a></h4>
-</br>
-</br>
-<h4>These are the avaliable Printer Lists</h4>
+<font size="5"><a href={{version.update.url}}>Download lastest version of the Printer-Installer Client</a></font></br>
+Copy this into your applications folder, then open it once.</br></br></br></br>
+
+
+<font size="5">These are the avaliable Printer Lists</font>
+</br>Once installed you can click on one of the links below to automatically populate the printer-installer menu</br></br>
 
 {% if printerlists %}
     {% for list in printerlists %}
-		<li><a href={% url "getlist" list.name %}>{{ list.name }}</a></li>
+		<li><a href={{ domain }}{{ list.name }}>{{ list.name }}</a></li>
     {% endfor %}
 {% else %}
     <p>No printer lists are available.</br>

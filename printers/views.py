@@ -6,6 +6,7 @@ from django.template.loader import get_template
 from django.forms.models import inlineformset_factory
 from django.conf import settings
 
+from urlparse import urlunparse
 from plistlib import writePlistToString
 
 from printers.models import *
@@ -15,7 +16,17 @@ from forms import *
 def index(request):
     printerlists = PrinterList.objects.all()
     version = Version.objects.filter(application__name='Printer-Installer', active=True).order_by('-published')[0]
-    context = {'printerlists': printerlists, 'version':version}
+    
+    host = request.get_host()
+    subpath = settings.SUB_PATH
+    if request.is_secure():
+        scheme = 'printerinstallers'
+    else:
+        scheme = 'printerinstaller'
+        
+    pr_uri = urlunparse([scheme,host,subpath,None,None,None])
+    context = {'domain':pr_uri,'printerlists': printerlists, 'version':version}
+    
     return render(request, 'printers/index.html', context)
 
 @login_required(redirect_field_name='')
