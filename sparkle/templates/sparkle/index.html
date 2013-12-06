@@ -25,7 +25,7 @@
     {% for v in versions %}
 	<tr>	
 		<th><a href={% url "version_edit" v.id %}>{{ v.version }}</th>
-		<th><a href={{ a.update.url }}>{{v.update.url}}</a></th>
+		<th><a href={{ v.update.url }}>{{v.update.url}}</a></th>
 		<td>{{ v.dsa_signature }}</td>
 		<th><a href={% url "version_activate" v.id %}>{{ v.active }}</a></th>
 		<th><a href={% url "version_delete" v.id %}>Delete</a></th>

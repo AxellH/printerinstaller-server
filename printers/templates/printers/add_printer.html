@@ -10,10 +10,13 @@
 <h3>Add Printer</h3>
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 <form action={%url "printer_add" %} method="post" enctype="multipart/form-data">{% csrf_token %}
-        <table>	
+	<table class="client_info table table-striped table-bordered">
+	<tbody>
             {{ form|as_bootstrap }}
-        </table>
-	</br><p><button type="submit" class="btn primary">Save</button></p>
-    </form>
+	</tbody>
+	</table>
+</br><p><button type="submit" class="btn primary">Save</button></p>
+</form>
+	
 	</br><p>* denotes required field</p>
 {% endblock %}

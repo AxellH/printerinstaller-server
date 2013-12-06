@@ -9,16 +9,24 @@ from django.conf import settings
 from plistlib import writePlistToString
 
 from printers.models import *
+from sparkle.models import *
 from forms import *
 
+def index(request):
+    printerlists = PrinterList.objects.all()
+    version = Version.objects.filter(application__name='Printer-Installer', active=True).order_by('-published')[0]
+    context = {'printerlists': printerlists, 'version':version}
+    return render(request, 'printers/index.html', context)
 
 @login_required(redirect_field_name='')
-def index(request):
+def manage(request):
     #show list of printers and groups
     printerlists = PrinterList.objects.all()
     printers = Printer.objects.all()
-    context = {'printerlists': printerlists,'printers' : printers}
-    return render(request, 'printers/index.html', context)
+    printer_form = PrinterForm(request.POST,request.FILES)
+    
+    context = {'printerlists': printerlists,'printers' : printers,'printer_form':printer_form}
+    return render(request, 'printers/manage.html', context)
 
 
 ###################################
@@ -38,7 +46,6 @@ def printer_add(request):
             new_option = form.cleaned_data['new_option']
             if new_option:
                  printer.option.create(option=new_option)
-            
             printer.save()
             return redirect('printers.views.index')            
     else:
@@ -57,8 +64,8 @@ def printer_edit(request, printer_id):
             new_option = form.cleaned_data['new_option']
             if new_option:
                  printer.option.create(option=new_option)            
-                 printer.save()
-        return redirect('printers.views.index')            
+            printer.save()
+            return redirect('printers.views.manage')            
     else:
         form = PrinterForm(instance=printer)
         
@@ -69,7 +76,7 @@ def printer_delete(request, id):
     printer = get_object_or_404(Printer, pk=id)
     if printer:
         printer.delete()
-    return redirect('printers.views.index')
+    return redirect('printers.views.manage')
     
 
 
@@ -83,7 +90,7 @@ def printerlist_add(request):
         if form.is_valid():
             printerlist = form.save(commit=True)
             printerlist.save()
-            return redirect('printers.views.index')            
+            return redirect('printers.views.manage')            
     else:
         form = PrinterListForm()
     return render_to_response('printers/add_printerlist.html', {'form': form,}, context_instance=RequestContext(request))
@@ -100,7 +107,7 @@ def printerlist_edit(request, printerlist_id):
         form = PrinterListForm(request.POST,instance=printerlist)
         if form.is_valid():
             form.save()
-            return redirect('printers.views.index')            
+            return redirect('printers.views.manage')            
     else:
         form = PrinterListForm(instance=printerlist)
     return render_to_response('printers/edit_printerlist.html', {'form': form,'printerlist':printerlist}, context_instance=RequestContext(request))
@@ -109,7 +116,7 @@ def printerlist_edit(request, printerlist_id):
 def printerlist_delete(request, id):
     p = get_object_or_404(PrinterList, pk=id)
     p.delete()
-    return redirect('printers.views.index')
+    return redirect('printers.views.manage')
 
 ########################################
 #########  Option Methods ##############
