@@ -14,6 +14,7 @@
 	<tr>	
 		<th><a href={% url "printerlist_edit" list.id %}>{{ list.name }}</a></th>
 		<td><a href={% url "printerlist_details" list.id %}>number of printers in list: {{list.printer.count}}</a>
+        <td><a href={% url "printerlist_public" list.id %}>Public: {{list.public}}</a>
 		<td><a href={% url "printerlist_delete" list.id %}>Remove</a></td>
 	</tr>
     {% endfor %}

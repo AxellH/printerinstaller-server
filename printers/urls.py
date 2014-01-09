@@ -17,7 +17,7 @@ urlpatterns = patterns('',
     url(r'^printerlist/edit/(?P<printerlist_id>\d+)/$', pviews.printerlist_edit, name='printerlist_edit'),
     url(r'^printerlist/delete/(?P<id>\d+)/$', pviews.printerlist_delete, name='printerlist_delete'),
     url(r'^printerlist/details/(?P<id>\d+)/$', pviews.printerlist_details, name='printerlist_details'), 
-    
+    url(r'^printerlist/public/(?P<id>\d+)/', pviews.printerlist_public,{}, name='printerlist_public'),
     url(r'^options/add/$', pviews.options_add,{}, name='options_add'),    
     url(r'^options/list/', pviews.options_list,{}, name='options_list'), 
     url(r'^options/delete/(?P<id>\d+)/$', pviews.options_delete, name='options_delete'),

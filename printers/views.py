@@ -129,6 +129,18 @@ def printerlist_delete(request, id):
     p.delete()
     return redirect('printers.views.manage')
 
+@login_required(redirect_field_name='')
+def printerlist_public(request, id):
+    printerlist = get_object_or_404(PrinterList, pk=id)
+    if printerlist.public:
+        printerlist.public=False
+    else:
+        printerlist.public=True
+    printerlist.save()
+    return redirect('printers.views.manage')
+
+
+
 ########################################
 #########  Option Methods ##############
 ########################################  
