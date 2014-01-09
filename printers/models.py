@@ -35,7 +35,7 @@ class Printer(models.Model):
 class PrinterList(models.Model):
     name = models.CharField(max_length=200)
     printer = models.ManyToManyField(Printer,blank=True)
-    
+    public = models.BooleanField(default=True);
     def __unicode__(self):
         return self.name
 

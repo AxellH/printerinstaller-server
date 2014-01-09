@@ -14,7 +14,7 @@ from sparkle.models import *
 from forms import *
 
 def index(request):
-    printerlists = PrinterList.objects.all()
+    printerlists = PrinterList.objects.filter(public=True)
     version = Version.objects.filter(application__name='Printer-Installer', active=True).order_by('-published')[0]
     
     host = request.get_host()
