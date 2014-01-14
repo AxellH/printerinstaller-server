@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load staticfiles %}
 
 {% block nav %}
 <li><a href={%url "manage" %}>Manage</a></li>
@@ -7,20 +8,28 @@
 {% endblock %}
 
 {% block content %}
-<font size="5"><a href={{version.update.url}}>Download lastest version of the Printer-Installer Client</a></font></br>
-Copy this into your applications folder, then open it once.</br></br></br></br>
+<font size="4"><b><a href={{version.update.url}}>Click here to download the lastest version of the Printer-Installer Client</a></b></font></br>
+Copy this into your applications folder, <b>then open it once!</b></br></br>
 
+<img src="{% static "images/copy.png" %}" alt="CopyFile"/></br></br></br>
 
-<font size="5">These are the avaliable Printer Lists</font>
-</br>Once installed you can click on one of the links below to automatically populate the printer-installer menu</br></br>
+<font size="4"><b>Once installed you can click on one of the links below</b></font></br>
+<font size="3"><i>(it will automatically populate the printer-installer menu)</i></font></br>
 
 {% if printerlists %}
     {% for list in printerlists %}
 		<li><a href={{ domain }}{{ list.name }}>{{ list.name }}</a></li>
     {% endfor %}
+	</br>
+	<img src="{% static "images/default.png" %}" alt="CopyFile"/></br></br></br>
+	<font size="3"><b>Choosing the "Configure" menu will give you some additional options</b></font></br>
+	
+	<img src="{% static "images/config.png" %}" alt="CopyFile"/></br></br></br>
 {% else %}
     <p>No printer lists are available.</br>
 {% endif %}
 <h4></h4>
+
+
 
 {% endblock %}
