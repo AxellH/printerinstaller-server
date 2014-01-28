@@ -14,9 +14,12 @@ GROUP_NAME='printerinstaller'
 APACHE_SUBPATH='printers'
 
 VIRENV_NAME='printerinstaller_env'
+
 ## you only need to set one of the following two requirements...
 DJANGO_REQUIREMENTS_FILE="setup/requirements.txt"
 DJANGO_REQUIREMENTS=(Django django-bootstrap-toolkit, south, markdown2)
+
+SOUTH_MANAGED_DJANGO_APPS=(printers,sparkle)
 
 OSX_CONF_FILE_DIR="OSX"
 OSX_WEBAPP_PLIST='edu.loyno.smc.printerinstaller.webapp.plist'
@@ -72,26 +75,18 @@ make_user_and_group(){
 }
 
 install(){
+	COMP_PATH=$(dirname `dirname $0`)
 	local VEV=$(which virtualenv)
 	[[ -z "${VEV}" ]] && easy_install virtualenv
+
+### Install the Vitrual Environment
 	"${VEV}" "${VIR_ENV}"
-			
+	
+### Copy the Project into the New Virtual Environment
+	cp -R ${COMP_PATH} "${VIR_ENV}/${PROJECT_NAME}"
+				
 	cd "${VIR_ENV}"
-	
-	
-	if [ ! -d "${VIR_ENV}/${PROJECT_NAME}" ]; then
-		if [ -n "${GIT_BRANCH}" ];then 
-			git clone -b "${GIT_BRANCH}" --single-branch "${GIT_REPO}" ./"${PROJECT_NAME}"
-		else
-			git clone "${GIT_REPO}" ./"${PROJECT_NAME}"
-		fi
-	else
-		cd "${PROJECT_NAME}"
-		git checkout "${GIT_BRANCH}"
-		git pull
-		cd ..
-	fi
-	
+		
 	source bin/activate
 	if [ -f "./${PROJECT_NAME}/${DJANGO_REQUIREMENTS_FILE}" ] ;then
 		pip install -r ./"${PROJECT_NAME}/${DJANGO_REQUIREMENTS_FILE}"
@@ -103,10 +98,6 @@ install(){
 	
 	cd "${PROJECT_NAME}"
 	
-	configure
-}
-
-configure(){
 	if [ "${PROJECT_SETTINGS_DIR}" != "" ]; then
 		eval_dir PROJECT_SETTINGS_DIR
 	fi
@@ -115,6 +106,7 @@ configure(){
 	local SETTINGS_FILE="${PROJECT_SETTINGS_DIR}settings.py"
 	cecho purple "Now we'll do some basic configuring to the settings.py file"
 	
+## Generate A Unique Secret Key For Django Site
 	local _seckey=$(LC_CTYPE=C tr -dc A-Za-z0-9_\!\@\#\$\%\^\*\(\)-+= < /dev/urandom | head -c 50 | xargs)
 	ised "SECRET_KEY" "SECRET_KEY = '${_seckey}'" "${SETTINGS_FILE}"
 	
@@ -148,22 +140,38 @@ configure(){
 	
 	while true;do
 	HOST_NAME=`scutil --get HostName`
-	cread question "Set ALLOWED_HOST as this: $HOST_NAME ? " yes/no
+	cread question "Set ALLOWED_HOST as this: $HOST_NAME [y/n]? " yesno
 	if [[ $REPLY =~ ^[Yy]$ ]];then
 		ised "ALLOWED_HOSTS =" "ALLOWED_HOSTS = ['${HOST_NAME}']" "${SETTINGS_FILE}"
 		break
-	elif	[[ $REPLY =~ ^[Nn]$ ]]; then
+	elif [[ $REPLY =~ ^[Nn]$ ]]; then
 		echo "you will need to edit this in the settings.py file once we're done."
 		break
 	fi	
 	done
-		
-	custom_config
 	
 	python manage.py collectstatic
+
+## Perform any needed Custom Configuration 
+	custom_config
+	
+## Initialize the DB and Subsequently Set Permissions
 	python manage.py syncdb
 	
-	set_permissions
+	for i in ${SOUTH_MANAGED_DJANGO_APPS[@]}; do
+		if [ `ls -l ./${i}/migrations/ | wc -l` -eq 0 ]; then
+			python manage.py schemamigration ${i} --initial
+		else
+			python manage.py schemamigration ${i} --auto
+		fi
+		python manage.py migrate ${i}
+	done	
+	
+## Set Permissions
+	cecho "Setting  User ${USER_NAME} and group ${GROUP_NAME} on `pwd`"
+	chown -R "${USER_NAME}":"${GROUP_NAME}" "${VIR_ENV}"
+	
+## Install OSX Server Components If needed
 	if [ ${OSX_SERVER_INSTALL} == true ];then
 		ised "RUNNING_ON_APACHE=" "RUNNING_ON_APACHE=True" "${SETTINGS_FILE}"
 		install_osx_server_components
@@ -214,9 +222,6 @@ install_osx_server_components(){
 	cecho blue "Open Server.app, select the site, go to Advanced and enable the webapp."
 }
 
-set_permissions(){
-	chown -R "${USER_NAME}":"${GROUP_NAME}" "${VIR_ENV}"
-}
 
 check_ID(){
 	# $1 is the dscl path and $2 is the Match
@@ -241,6 +246,7 @@ check_ID(){
 	 
 }
 
+############################# Utility Functions ############
 cecho(){	
 	case "$1" in
 		red|alert) local COLOR=$(printf "\\e[1;31m");;
@@ -274,6 +280,7 @@ cread(){
 		bold|prompt) local COLOR=$(printf "\\e[1;30m");;
 		*) local COLOR=$(printf "\\e[0;30m");;
 	esac	
+	
 	local MESSAGE="${2}"
 	local RESET=$(printf "\\e[0m")	
 	if [ -z ${3} ];then
@@ -305,6 +312,10 @@ eval_dir(){
 ised(){
 	sed -i "" -e "s;^${1}.*;${2};" "${3}"
 }
+###############################################################
+############################ End Utility Functions ############
+###############################################################
+
 
 __main__(){
 	pre_condition_test
