@@ -10,3 +10,4 @@ server/files/ppds/*
 server/files/sparkle/*
 sparkle/migrations/*
 printers/migrations/*
+printer-installer.log
