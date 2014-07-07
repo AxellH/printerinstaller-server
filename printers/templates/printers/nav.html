@@ -4,7 +4,9 @@ Manage
 <b class="caret"></b>
 </a>
 <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+{% if updateServer %}
 <li><a href={%url "su-index" %}>Update Server</a></li>
+{% endif %}
 <li><a href={%url "options_list" %}>Manage Options</a></li>
 </ul>
 </li>

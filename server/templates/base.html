@@ -37,12 +37,10 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="/printers/">Printer-Installer Server</a>
+          <a class="brand" href="{% url 'home' %}">Printer-Installer Server</a>
           <div class="nav-collapse collapse">
             <ul class="nav pull-right">
-				
 				{% block nav %}
-              
 			  {% endblock %}
   			{% if user.is_authenticated %}
   			
@@ -55,12 +53,9 @@
                 <li><a href={% url "admin:index" %}>Administraton</a></li>
                 <li><a href={% url "logout" %}>{% trans "Log out" %}</a></li>
   			  </ul>
-  			</li>
-  			
-  			{% endif %}
-			  
+  			</li>	
+  			{% endif %}  
             </ul>
-			
           </div><!--/.nav-collapse -->
         </div>
       </div>

@@ -3,7 +3,7 @@ from django.forms import ModelForm, Select
 
 from models import *
 from validators import *
-
+from extras import supported_protocols
 class PrinterListForm(forms.ModelForm):
     class Meta:
         model = PrinterList
@@ -16,9 +16,9 @@ class OptionsForm(forms.ModelForm):
 class PrinterForm(forms.ModelForm):
     class Meta:
         model = Printer
-        
-    name=forms.CharField(max_length=50,label='Priner Name*',help_text='CUPS compliant name, No spaces or CAPS, must start with letter')
-    protocol=forms.CharField(max_length=50,label='Protocol*',help_text='(socket,lpd,ipp or http)',validators=[validate_protocol])
+    
+    name=forms.CharField(max_length=50,label='Priner Name*',help_text='CUPS compliant name, No spaces or CAPS, must start with letter',validators=[validate_printer_name])
+    protocol = forms.ChoiceField(choices=supported_protocols, label=u'Protocol*',validators=[validate_protocol])
     host=forms.CharField(max_length=50,label='Host*',help_text='(FQDN or IP Address of printer or server)')
 
     model=forms.CharField(max_length=50,label='Printer Model',help_text='(As Listed with lpinfo -m)',required=False)
@@ -26,5 +26,6 @@ class PrinterForm(forms.ModelForm):
     new_option = forms.CharField(max_length=50,required=False)
     option = forms.ModelMultipleChoiceField(queryset=Option.objects.all(),widget = forms.CheckboxSelectMultiple,required=False)
     
+
 
         

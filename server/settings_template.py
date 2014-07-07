@@ -4,15 +4,15 @@ import os
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 ## Set this to true if you're running on Apache via wsgi module
-RUNNING_ON_APACHE=True
+RUNNING_ON_APACHE=False
 
 ## set this to the subpath you plan on running 
 ## make sure to include a trailing slash (e.g. printers/ )
 RUN_ON_SUBPATH=[True,'printers/']
 
 ## if set to true this Site will host the Sparkle AppCast for Printer-Installer server, otherwise
-## you can specify an alternate URL where you can point it to an different url.
-HOST_SPARKLE_UPDATES=[True,'http://localhost/printers/sparkle/Printer-Installer/appcast.xml']
+## you can specify an alternate appcast url.
+HOST_SPARKLE_UPDATES=[False,'http://my.host.com/appcast.xml']
 
 if RUN_ON_SUBPATH[0]:
     SUB_PATH = RUN_ON_SUBPATH[1]
@@ -77,14 +77,14 @@ MEDIA_ROOT = os.path.join(PROJECT_DIR, 'files')
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
-SVR_NAME = "http://127.0.0.1"
+SVR_NAME = ""
 MEDIA_URL = SVR_NAME + "/"
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_DIR, '/static/')
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static/')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -92,7 +92,7 @@ if RUNNING_ON_APACHE == True:
     STATIC_URL = '/static_printerinstaller/'
     
 else:
-    STATIC_URL = os.path.join('/',SUB_PATH,'/static/')
+    STATIC_URL = os.path.join('/',SUB_PATH,'static/')
     
     
     
@@ -158,9 +158,10 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
-    'bootstrap_toolkit',
-    'south',
+    'server',
     'printers',
+    'south',
+    'bootstrap_toolkit',
 )
 
 if HOST_SPARKLE_UPDATES[0]:
@@ -186,33 +187,13 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        },
-        'file': {
-                    'level':
-                        'ERROR',
-                    'class':
-                        'logging.FileHandler',
-                    'formatter':
-                        'verbose',
-                    'filename':
-                        PROJECT_DIR+'printer-installer.log'
         }
-    },
-    'formatters': {
-            'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-            },
-            'simple': {
-                'format':
-                    '%(levelname)s %(message)s'
-            },
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins','file'],
+            'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
         },
-        
     }
 }

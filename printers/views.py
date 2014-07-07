@@ -15,8 +15,17 @@ from forms import *
 
 def index(request):
     printerlists = PrinterList.objects.filter(public=True)
-    version = Version.objects.filter(application__name='Printer-Installer', active=True).order_by('-published')[0]
     
+    version = []
+    updateServer = False
+
+    if settings.HOST_SPARKLE_UPDATES[0]:
+        updateServer = True
+        try:
+            version = Version.objects.filter(application__name='Printer-Installer', active=True).order_by('-published')[0]
+        except:
+            pass
+
     host = request.get_host()
     subpath = settings.SUB_PATH
     if request.is_secure():
@@ -25,7 +34,7 @@ def index(request):
         scheme = 'printerinstaller'
         
     pr_uri = urlunparse([scheme,host,subpath,None,None,None])
-    context = {'domain':pr_uri,'printerlists': printerlists, 'version':version}
+    context = {'domain':pr_uri,'printerlists': printerlists, 'version':version,'updateServer':updateServer}
     
     return render(request, 'printers/index.html', context)
 
@@ -36,7 +45,7 @@ def manage(request):
     printers = Printer.objects.all()
     printer_form = PrinterForm(request.POST,request.FILES)
     
-    context = {'printerlists': printerlists,'printers' : printers,'printer_form':printer_form}
+    context = {'printerlists': printerlists,'printers' : printers,'printer_form':printer_form,'updateServer':settings.HOST_SPARKLE_UPDATES[0]}
     return render(request, 'printers/manage.html', context)
 
 
