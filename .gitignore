@@ -1,13 +1,10 @@
 *.pyc
 *.old
 .DS_Store
-settings.py
 printerinstaller.db
 dsa_priv.pem
 serverprinter-installer.log
 server/static/*
 server/files/ppds/*
 server/files/sparkle/*
-sparkle/migrations/*
-printers/migrations/*
 printer-installer.log
