@@ -1,4 +1,5 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect, render
 from django.template import RequestContext, Template, Context, loader
@@ -219,4 +220,35 @@ def getlist(request, name):
         
     detail=writePlistToString({'printerList':plist,'updateServer':updateServer})
     return HttpResponse(detail)
-    
+
+def app_login(request):
+    login_failed = False
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                auth_login(request, user)
+            else:
+                return HttpResponseForbidden(\
+                    content='Your account is not active.')
+        else:
+            login_failed = True
+
+    if request.user.is_authenticated():
+        status = 200
+    else:
+        status = 401
+
+    response = render_to_response('printers/app_login.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = status
+    if login_failed:
+        response['Auth-Response'] = 'Login Failed'
+    return response
+
+
+def app_logout(request):
+    auth_logout(request)
+    return redirect('printers/app_login.html')
