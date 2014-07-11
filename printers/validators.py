@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from extras import supported_protocols
+from conf import supported_protocols
 def validate_protocol(value):
     # supported_protocols = ['ipp','http','socket','lpd','https']
     # if not value in supported_protocols:
