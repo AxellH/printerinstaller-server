@@ -8,6 +8,13 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding model 'PrivateKey'
+        db.create_table(u'sparkle_privatekey', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('private_key', self.gf('django.db.models.fields.files.FileField')(max_length=100)),
+        ))
+        db.send_create_signal(u'sparkle', ['PrivateKey'])
+
         # Adding model 'Application'
         db.create_table(u'sparkle_application', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -51,6 +58,9 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
+        # Deleting model 'PrivateKey'
+        db.delete_table(u'sparkle_privatekey')
+
         # Deleting model 'Application'
         db.delete_table(u'sparkle_application')
 
@@ -69,6 +79,11 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Application'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
+        },
+        u'sparkle.privatekey': {
+            'Meta': {'object_name': 'PrivateKey'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'private_key': ('django.db.models.fields.files.FileField', [], {'max_length': '100'})
         },
         u'sparkle.systemprofilereport': {
             'Meta': {'object_name': 'SystemProfileReport'},

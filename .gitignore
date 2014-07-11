@@ -5,6 +5,5 @@ printerinstaller.db
 dsa_priv.pem
 serverprinter-installer.log
 server/static/*
-server/files/ppds/*
-server/files/sparkle/*
+server/files/*
 printer-installer.log

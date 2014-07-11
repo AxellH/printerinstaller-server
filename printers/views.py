@@ -12,19 +12,18 @@ from plistlib import writePlistToString
 from printers.models import *
 from sparkle.models import *
 from forms import *
+from server.util import github_latest_release
 
 def index(request):
     printerlists = PrinterList.objects.filter(public=True)
-    
-    version = []
-    updateServer = False
-
+    version_url = None
     if settings.HOST_SPARKLE_UPDATES[0]:
-        updateServer = True
-        try:
-            version = Version.objects.filter(application__name='Printer-Installer', active=True).order_by('-published')[0]
-        except:
-            pass
+        versions = Version.objects.filter(application__name='Printer-Installer', active=True).order_by('-published')
+        if versions:
+            version_url = version[0].update.url
+    
+    if not version_url:
+        version_url = github_latest_release('eahrold','Printer-Installer')
 
     host = request.get_host()
     subpath = settings.SUB_PATH
@@ -34,7 +33,7 @@ def index(request):
         scheme = 'printerinstaller'
         
     pr_uri = urlunparse([scheme,host,subpath,None,None,None])
-    context = {'domain':pr_uri,'printerlists': printerlists, 'version':version,'updateServer':updateServer}
+    context = {'domain':pr_uri,'printerlists': printerlists, 'version':version_url}
     
     return render(request, 'printers/index.html', context)
 
@@ -185,6 +184,13 @@ def getlist(request, name):
     printers=pl.printer.all()
     plist = []
     
+    if Version.objects.all():
+        updateServer = settings.HOST_SPARKLE_UPDATES[1]
+    else:
+        updateServer = settings.GITHUB_APPCAST_URL
+
+
+
     for p in printers:
         if(p.ppd_file):
             ppd_url=p.ppd_file.url
@@ -211,6 +217,6 @@ def getlist(request, name):
             
         plist.append(d)
         
-    detail=writePlistToString({'printerList':plist,'updateServer':settings.HOST_SPARKLE_UPDATES[1]})
+    detail=writePlistToString({'printerList':plist,'updateServer':updateServer})
     return HttpResponse(detail)
     

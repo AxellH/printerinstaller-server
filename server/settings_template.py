@@ -1,35 +1,41 @@
 # Django settings for munkiwebadmin project.
 import os
-
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-## Set this to true if you're running on Apache via wsgi module
+#######################################################
+##  Configure printerinstaller server specific items ##
+#######################################################
+
+# Full Host name and port of server
+# e.g http://127.0.0.1:8000
+SERVER_HOST_NAME = "http://127.0.0.1:8000"
+
+# Set this to true if you're running on Apache via wsgi module
 RUNNING_ON_APACHE=False
 
-## set this to the subpath you plan on running 
-## make sure to include a trailing slash (e.g. printers/ )
+ 
+# set this to the subpath you plan on running 
+# make sure to include a trailing slash (e.g. printers/ )
 RUN_ON_SUBPATH=[True,'printers/']
 
-## if set to true this Site will host the Sparkle AppCast for Printer-Installer server, otherwise
-## you can specify an alternate appcast url.
-HOST_SPARKLE_UPDATES=[False,'http://my.host.com/appcast.xml']
 
-if RUN_ON_SUBPATH[0]:
-    SUB_PATH = RUN_ON_SUBPATH[1]
-else:
-    SUB_PATH=''
+# Configuring Sparkle Updates
+# if set to True you will be able to upload versions of Printer-Installer.app 
+# and it will automatically create AppCasts for Sparkle.
+# If set to False it will use the appcast at the master github page, you can override this value below.
+HOST_SPARKLE_UPDATES=[True,SERVER_HOST_NAME]
+GITHUB_APPCAST_URL="https://raw.githubusercontent.com/eahrold/Printer-Installer/master/Downloads/appcast.xml"
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+#################################################
+##  End printerinstaller server specific items ##
+#################################################
 
-
+# Set this to the admins
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    # ('My Admin', 'myadmin@work.com'),
 )
 
-MANAGERS = ADMINS
-
-SPARKLE_PRIVATE_KEY_PATH=os.path.join(PROJECT_DIR, 'private','dsa_priv.pem')
+DEBUG = True
 
 DATABASES = {
     'default': {
@@ -42,6 +48,9 @@ DATABASES = {
         'PORT': '',                
     }
 }
+
+MANAGERS = ADMINS
+TEMPLATE_DEBUG = DEBUG
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -70,16 +79,31 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
+
+if RUN_ON_SUBPATH[0]:
+    SUB_PATH = RUN_ON_SUBPATH[1]
+else:
+    SUB_PATH=''
+
+if HOST_SPARKLE_UPDATES[0]:
+    HOST_SPARKLE_UPDATES[1]=os.path.join(HOST_SPARKLE_UPDATES[1],
+                                        SUB_PATH,
+                                        'sparkle/Printer-Installer/appcast.xml',
+                                         )
+else:
+    HOST_SPARKLE_UPDATES[1]=GITHUB_APPCAST_URL
+
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_DIR, 'files')
 
+SPARKLE_PRIVATE_KEY_PATH=os.path.join(MEDIA_ROOT, 'private','dsa_priv.pem')
+
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
-SVR_NAME = ""
-MEDIA_URL = SVR_NAME + "/"
-
+MEDIA_URL = SERVER_HOST_NAME + "/"
+SERVE_FILES=True
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
@@ -90,12 +114,8 @@ STATIC_ROOT = os.path.join(PROJECT_DIR, 'static/')
 # Example: "http://media.lawrence.com/static/"
 if RUNNING_ON_APACHE == True:
     STATIC_URL = '/static_printerinstaller/'
-    
 else:
     STATIC_URL = os.path.join('/',SUB_PATH,'static/')
-    
-    
-    
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -105,16 +125,16 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_DIR, 'site_static'),
 )
 
-LOGIN_URL='/'+SUB_PATH+'login/'
-LOGOUT_URL='/'+SUB_PATH+'logout/'
-LOGIN_REDIRECT_URL='/'+SUB_PATH
+LOGIN_URL=os.path.join('/',SUB_PATH,'login/')
+LOGOUT_URL=os.path.join('/',SUB_PATH,'logout/')
+LOGIN_REDIRECT_URL=os.path.join('/',SUB_PATH)
 
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -146,6 +166,13 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_DIR, 'templates'),
 )
 
+from django.conf import global_settings
+TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
+    'server.context_processors.update_server',
+    'django.contrib.auth.context_processors.auth'
+    )
+
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -164,7 +191,7 @@ INSTALLED_APPS = (
     'bootstrap_toolkit',
 )
 
-if HOST_SPARKLE_UPDATES[0]:
+if HOST_SPARKLE_UPDATES[0] and not 'DYNO' in os.environ :
     INSTALLED_APPS = INSTALLED_APPS + ('sparkle',)
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
@@ -198,6 +225,7 @@ LOGGING = {
     }
 }
 
+
 ## Settings For deploying to heroku
 if 'DYNO' in os.environ:
   # Parse database configuration from $DATABASE_URL
@@ -209,3 +237,7 @@ if 'DYNO' in os.environ:
 
   # Allow all host headers
   ALLOWED_HOSTS = ['*']
+
+  # If serving from heroku disable the ability to server files
+  SERVE_FILES=False
+

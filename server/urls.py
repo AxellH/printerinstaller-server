@@ -11,7 +11,6 @@ if settings.RUNNING_ON_APACHE:
 else:        
     sub_path = settings.SUB_PATH
 
-
 urlpatterns = patterns('',
     url(r'^%sadmin/'% sub_path, include(admin.site.urls)),
     url(r'^%slogin/$'% sub_path, 'django.contrib.auth.views.login',name='login'),
@@ -31,4 +30,8 @@ urlpatterns += patterns('',
     url(r'^%s$'% sub_path, 'printers.views.index', name='home'),
     ) 
 
-# if settings.DEBUG:+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG and not settings.RUNNING_ON_APACHE:
+    urlpatterns += patterns('',
+    (r'^sparkle/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT+'/sparkle'}),
+    (r'^ppds/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT+'/ppds'}),
+)
