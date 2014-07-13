@@ -50,12 +50,12 @@
 ### configure the app settings
 
 	cd printerinstaller
-	cp server/example_settings.py cp server/settings.py
+	cp printerinstaller/example_settings.py cp printerinstaller/settings.py
 	
 	python manage.py collectstatic
 	python manage.py syncdb
 	
-	python manage.py runserver
+	python manage.py runprinterinstaller
 
 During initial testing, in the settings.py file you'll want to set
 	
@@ -67,4 +67,4 @@ If ultimatley running via WSGI module on Apache, using the subpath /printers, wh
 
 </br>
 ### Additional OS X setup
-Other tid-bits for OSX Server.app [Setup instructions](https://github.com/eahrold/printerinstaller-server/blob/devel/OSX/OS X Install instructions.md)
+Other tid-bits for OSX Server.app [Setup instructions](https://github.com/eahrold/printerinstaller-printerinstaller/blob/devel/OSX/OS X Install instructions.md)

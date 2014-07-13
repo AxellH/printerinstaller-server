@@ -6,7 +6,7 @@ def validate_protocol(value):
         #raise ValidationError(u'protocol %s is not currently supported' % value)
 	is_supported = False
 
-	for i in supported_protocols:
+	for i in supported_protocols():
 		if i[0] == value:
 			is_supported = True
 			break

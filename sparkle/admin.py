@@ -1,5 +1,10 @@
 from django.contrib import admin
-from sparkle.models import Application, Version, SystemProfileReport, SystemProfileReportRecord
+from sparkle.models import *
+
+class PrivateKeyAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(PrivateKey,PrivateKeyAdmin)
 
 class ApplicationAdmin(admin.ModelAdmin):
     pass

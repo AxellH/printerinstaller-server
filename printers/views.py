@@ -5,21 +5,21 @@ from django.template import RequestContext, Template, Context, loader
 from django.template.loader import get_template
 from django.forms.models import inlineformset_factory
 from django.conf import settings
-
 from urlparse import urlunparse
 from plistlib import writePlistToString
 
-from printers.models import *
-from sparkle.models import *
+from models import *
 from forms import *
-from server.util import github_latest_release
+
+from sparkle.models import *
+from printerinstaller.utils import github_latest_release
 
 def index(request):
     printerlists = PrinterList.objects.filter(public=True)
     version_url = None
-    if settings.HOST_SPARKLE_UPDATES[0]:
-        versions = Version.objects.filter(application__name='Printer-Installer', active=True).order_by('-published')
-        if versions:
+    if settings.HOST_SPARKLE_UPDATES:
+        version = Version.objects.filter(application__name='Printer-Installer', active=True).order_by('-published')
+        if version:
             version_url = version[0].update.url
     
     if not version_url:
@@ -42,9 +42,9 @@ def manage(request):
     #show list of printers and groups
     printerlists = PrinterList.objects.all()
     printers = Printer.objects.all()
-    printer_form = PrinterForm(request.POST,request.FILES)
+    options = Option.objects.all()
     
-    context = {'printerlists': printerlists,'printers' : printers,'printer_form':printer_form,'updateServer':settings.HOST_SPARKLE_UPDATES[0]}
+    context = {'printerlists': printerlists,'printers' : printers,'options':options}
     return render(request, 'printers/manage.html', context)
 
 
@@ -66,16 +66,16 @@ def printer_add(request):
             if new_option:
                  printer.option.create(option=new_option)
             printer.save()
-            return redirect('printers.views.index')            
+            return redirect('printers.views.manage')            
     else:
         form = PrinterForm()
         
-    return render_to_response('printers/add_printer.html', {'form': form,}, context_instance=RequestContext(request))
+    return render_to_response('printers/forms/printer.html', {'form': form,}, context_instance=RequestContext(request))
 
 
 @login_required(redirect_field_name='')
-def printer_edit(request, printer_id):
-    printer=get_object_or_404(Printer, pk=printer_id)
+def printer_edit(request, id):
+    printer=get_object_or_404(Printer, pk=id)
     if request.POST:
         form = PrinterForm(request.POST,request.FILES,instance=printer)
         if form.is_valid(): 
@@ -88,7 +88,7 @@ def printer_edit(request, printer_id):
     else:
         form = PrinterForm(instance=printer)
         
-    return render_to_response('printers/edit_printer.html', {'form': form,'printer':printer}, context_instance=RequestContext(request))
+    return render_to_response('printers/forms/printer.html', {'form': form,'printer':printer}, context_instance=RequestContext(request))
     
 @login_required(redirect_field_name='')
 def printer_delete(request, id):
@@ -112,7 +112,7 @@ def printerlist_add(request):
             return redirect('printers.views.manage')            
     else:
         form = PrinterListForm()
-    return render_to_response('printers/add_printerlist.html', {'form': form,}, context_instance=RequestContext(request))
+    return render_to_response('printers/forms/printerlist.html', {'form': form,}, context_instance=RequestContext(request))
     
 @login_required(redirect_field_name='')
 def printerlist_details(request, id):
@@ -120,8 +120,8 @@ def printerlist_details(request, id):
     return render(request, 'printers/printerlist_details.html', {'printerlist': printerlist})
 
 @login_required(redirect_field_name='')
-def printerlist_edit(request, printerlist_id):
-    printerlist = PrinterList.objects.get(id=printerlist_id)  
+def printerlist_edit(request, id):
+    printerlist = PrinterList.objects.get(id=id)  
     if request.POST:
         form = PrinterListForm(request.POST,instance=printerlist)
         if form.is_valid():
@@ -129,12 +129,12 @@ def printerlist_edit(request, printerlist_id):
             return redirect('printers.views.manage')            
     else:
         form = PrinterListForm(instance=printerlist)
-    return render_to_response('printers/edit_printerlist.html', {'form': form,'printerlist':printerlist}, context_instance=RequestContext(request))
+    return render_to_response('printers/forms/printerlist.html', {'form': form,'printerlist':printerlist}, context_instance=RequestContext(request))
     
 @login_required(redirect_field_name='')
 def printerlist_delete(request, id):
-    p = get_object_or_404(PrinterList, pk=id)
-    p.delete()
+    printerlist = get_object_or_404(PrinterList, pk=id)
+    printerlist.delete()
     return redirect('printers.views.manage')
 
 @login_required(redirect_field_name='')
@@ -153,28 +153,32 @@ def printerlist_public(request, id):
 #########  Option Methods ##############
 ########################################  
 @login_required(redirect_field_name='')
-def options_list(request):
-    options = Option.objects.all()
-    return render(request, 'printers/options_list.html', {'options': options})
-
-@login_required(redirect_field_name='')
 def options_add(request):
     if request.method == 'POST':
-        form = OptionsForm(request.POST)
+        form = OptionForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('printers.views.options_list')
+            return redirect('printers.views.manage')
     else:
-        form = OptionsForm()
-    return render_to_response('printers/add_option.html', {'form': form,}, context_instance=RequestContext(request))
+        form = OptionForm()
+    return render_to_response('printers/forms/option.html', {'form': form,}, context_instance=RequestContext(request))
     
-    
+def options_edit(request, id):
+    options = get_object_or_404(Option, pk=id)
+    if request.POST:
+        form = OptionForm(request.POST,instance=options)
+        if form.is_valid():
+            form.save()
+            return redirect('printers.views.manage')            
+    else:
+        form = OptionForm(instance=options)
+    return render_to_response('printers/forms/option.html', {'form': form,'options':options}, context_instance=RequestContext(request))
    
 @login_required(redirect_field_name='')
 def options_delete(request,id):
-    o = get_object_or_404(Option, pk=id)
-    o.delete()
-    return redirect('printers.views.options_list')
+    option = get_object_or_404(Option, pk=id)
+    option.delete()
+    return redirect('printers.views.manage')
     
 
 ## This is the request that returns the plist for the Printer-Installer.app
@@ -184,12 +188,10 @@ def getlist(request, name):
     printers=pl.printer.all()
     plist = []
     
-    if Version.objects.all():
-        updateServer = settings.HOST_SPARKLE_UPDATES[1]
+    if settings.SERVE_FILES and Version.objects.all():
+        updateServer = settings.APPCAST_URL
     else:
         updateServer = settings.GITHUB_APPCAST_URL
-
-
 
     for p in printers:
         if(p.ppd_file):

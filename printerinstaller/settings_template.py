@@ -13,17 +13,22 @@ SERVER_HOST_NAME = "http://127.0.0.1:8000"
 # Set this to true if you're running on Apache via wsgi module
 RUNNING_ON_APACHE=False
 
- 
-# set this to the subpath you plan on running 
-# make sure to include a trailing slash (e.g. printers/ )
-RUN_ON_SUBPATH=[True,'printers/']
-
+# set this to True if you want to run on a subpath 
+# the default path will be printers/
+RUN_ON_SUBPATH=False
 
 # Configuring Sparkle Updates
 # if set to True you will be able to upload versions of Printer-Installer.app 
-# and it will automatically create AppCasts for Sparkle.
+# and it will automatically create AppCasts for Sparkle, otherwise it will use the GITHUB_APPCAST_URL.
 # If set to False it will use the appcast at the master github page, you can override this value below.
-HOST_SPARKLE_UPDATES=[True,SERVER_HOST_NAME]
+HOST_SPARKLE_UPDATES=True
+
+# Set to true if you want to server PPD files
+SERVE_FILES=True
+
+# If not hosting sparkle updates, it will use this url for AppCasts.
+# If building a custom version of Printer-Installer.app to provide a
+# print quota software for your environment set this to your forks URL
 GITHUB_APPCAST_URL="https://raw.githubusercontent.com/eahrold/Printer-Installer/master/Downloads/appcast.xml"
 
 #################################################
@@ -79,20 +84,20 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
-
-if RUN_ON_SUBPATH[0]:
-    SUB_PATH = RUN_ON_SUBPATH[1]
+## Configure the subpath to run the Django App on
+if RUN_ON_SUBPATH:
+    SUB_PATH = 'printers/'
 else:
     SUB_PATH=''
 
-if HOST_SPARKLE_UPDATES[0]:
-    HOST_SPARKLE_UPDATES[1]=os.path.join(HOST_SPARKLE_UPDATES[1],
+if HOST_SPARKLE_UPDATES:
+    APPCAST_URL=os.path.join(SERVER_HOST_NAME,
                                         SUB_PATH,
                                         'sparkle/Printer-Installer/appcast.xml',
                                          )
 else:
-    HOST_SPARKLE_UPDATES[1]=GITHUB_APPCAST_URL
-
+    APPCAST_URL=GITHUB_APPCAST_URL
+    
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_DIR, 'files')
@@ -103,7 +108,7 @@ SPARKLE_PRIVATE_KEY_PATH=os.path.join(MEDIA_ROOT, 'private','dsa_priv.pem')
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
 MEDIA_URL = SERVER_HOST_NAME + "/"
-SERVE_FILES=True
+
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
@@ -157,10 +162,10 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'server.urls'
+ROOT_URLCONF = 'printerinstaller.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'server.wsgi.application'
+WSGI_APPLICATION = 'printerinstaller.wsgi.application'
 
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_DIR, 'templates'),
@@ -168,7 +173,7 @@ TEMPLATE_DIRS = (
 
 from django.conf import global_settings
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
-    'server.context_processors.update_server',
+    'printerinstaller.context_processors.update_server',
     'django.contrib.auth.context_processors.auth'
     )
 
@@ -185,13 +190,12 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
-    'server',
     'printers',
     'south',
     'bootstrap_toolkit',
 )
 
-if HOST_SPARKLE_UPDATES[0] and not 'DYNO' in os.environ :
+if HOST_SPARKLE_UPDATES and not 'DYNO' in os.environ :
     INSTALLED_APPS = INSTALLED_APPS + ('sparkle',)
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
@@ -225,19 +229,22 @@ LOGGING = {
     }
 }
 
-
 ## Settings For deploying to heroku
 if 'DYNO' in os.environ:
-  # Parse database configuration from $DATABASE_URL
-  import dj_database_url
-  DATABASES['default'] =  dj_database_url.config()
+    # Parse database configuration from $DATABASE_URL
+    import dj_database_url
+    DATABASES['default'] =  dj_database_url.config()
 
-  # Honor the 'X-Forwarded-Proto' header for request.is_secure()
-  SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    # Honor the 'X-Forwarded-Proto' header for request.is_secure()
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-  # Allow all host headers
-  ALLOWED_HOSTS = ['*']
+    # Allow all host headers
+    ALLOWED_HOSTS = ['*']
 
-  # If serving from heroku disable the ability to server files
-  SERVE_FILES=False
+    # Make Sure Debugging is false to Heroku
+    DEBUG=False
+    # If serving from heroku disable the ability to server files
+    HOST_SPARKLE_UPDATES = False
+    SERVE_FILES=False
+
 
