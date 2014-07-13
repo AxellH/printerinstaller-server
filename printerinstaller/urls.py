@@ -20,7 +20,7 @@ urlpatterns = patterns('',
     )
 
 # a test needs to be done to check wether the sparkle url's should be included.
-if settings.HOST_SPARKLE_UPDATES[0]:
+if settings.HOST_SPARKLE_UPDATES:
     urlpatterns += patterns('',
         url(r'^%ssparkle/'% sub_path, include('sparkle.urls'))
         )
@@ -30,8 +30,9 @@ urlpatterns += patterns('',
     url(r'^%s$'% sub_path, 'printers.views.index', name='home'),
     ) 
 
-if settings.DEBUG and not settings.RUNNING_ON_APACHE:
+if settings.SERVE_FILES and not settings.RUNNING_ON_APACHE:
     urlpatterns += patterns('',
+    (r'^static/(?P<path>.*)$',  'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
     (r'^sparkle/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT+'/sparkle'}),
-    (r'^ppds/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT+'/ppds'}),
+    (r'^ppds/(?P<path>.*)$',    'django.views.static.serve', {'document_root': settings.MEDIA_ROOT+'/ppds'}),
 )

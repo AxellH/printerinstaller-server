@@ -33,7 +33,7 @@ def private_key_add(request):
     else:
         form = PrivateKeyForm()
     context = {'form':form, 'error':error}
-    return render_to_response('sparkle/private_key_form.html', context, context_instance=RequestContext(request)) 
+    return render_to_response('sparkle/forms/private_key.html', context, context_instance=RequestContext(request)) 
 
 @login_required(redirect_field_name='')
 def private_key_edit(request, id):
@@ -51,7 +51,7 @@ def private_key_edit(request, id):
         form = PrivateKeyForm(instance=privateKey)
 
     context = {'form': form,'privateKey':privateKey,'error':error}
-    return render_to_response('sparkle/private_key_form.html', context, context_instance=RequestContext(request)) 
+    return render_to_response('sparkle/forms/private_key.html', context, context_instance=RequestContext(request)) 
 
 
 @login_required(redirect_field_name='')
@@ -64,7 +64,7 @@ def version_edit(request, id):
         return redirect('sparkle.views.index')            
     else:
         form = AppcastForm(instance=version)
-    return render_to_response('sparkle/version_edit.html', {'form': form,'version':version}, context_instance=RequestContext(request))
+    return render_to_response('sparkle/forms/version.html', {'form': form,'version':version}, context_instance=RequestContext(request))
     
 @login_required(redirect_field_name='')
 def version_add(request):
@@ -76,7 +76,7 @@ def version_add(request):
         return redirect('sparkle.views.index')            
     else:
         form = AppcastForm(initial={'application':Application.objects.get(id=1)})
-    return render_to_response('sparkle/version_add.html', {'form': form,}, context_instance=RequestContext(request))
+    return render_to_response('sparkle/forms/version.html', {'form': form,}, context_instance=RequestContext(request))
 
 @login_required(redirect_field_name='')
 def version_delete(request, id):

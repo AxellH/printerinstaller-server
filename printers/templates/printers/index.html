@@ -1,28 +1,22 @@
 {% extends "base.html" %}
-{% load i18n %}
+
 {% load staticfiles %}
+{% load i18n %}
 
 {% block nav %}
 <li><a href={%url "manage" %}>Manage</a></li>
 {% endblock %}
 {% block content %}
-
-{% if update_server %}
-<link href="{% static "lightbox/css/lightbox.css"%}" rel="stylesheet" />
-
-	{% if version %}
-		<font size="4"><b><a href={{version}}>Click here to download the latest version of the Printer-Installer Client</a></b></font></br>
-		Copy this into your applications folder, <b>then open it once!</b></br></br></br>
-		<font size="4"><b>Once installed you can click on one of the links below</b></font></br>
-		<font size="3"><i>(it will automatically populate the Printer-Installer menu)</i></font></br></br>
-	{% else %}
-		<font size="3">Click on one of the links below to update the Printer-Installer menubar item</font></br></br>
-	{% endif %}
+{% if version %}
+	<link href="{% static "lightbox/css/lightbox.css"%}" rel="stylesheet" />
+		<font size="4"><b><a href={{version}}>Download the Printer-Installer Client</a></b></font></br>
+		<font size="1"><i>Copy this into your applications folder,<b> then open it once!</i></font></b></br></br></br>
 {% endif %}
-
+		<font size="4"><b>Click on a list</b></font></br>
+		<font size="1"><i>this will automatically populate the Printer-Installer menu</i></font>
 {% if printerlists %}
     {% for list in printerlists %}
-		<li><a href="{{ domain }}/{{ list.name }}">{{ list.name }}</a></li>
+		<pre>  <a href="{{ domain }}/{{ list.name }}">{{ list.name }}</a></pre>
     {% endfor %}
 </br>
 </br>	
@@ -31,14 +25,23 @@
 {% endif %}
 
 {% if version %}
-<font size="3">Screen Shots of the install process...</font></br></br>
-
-<a href="{% static "images/copy.png" %}" data-lightbox="settings" data-title="Copy to Applications folder"><img src="{% static "images/copy-thumb.png" %}" alt="copy"/></a>
-
+<font size="4"><b>Install Process</b></font></br>
+<div class="table-responsive hideOverflow">
+<table>
+<tr>
+<td>Copy
+</td><td>Configure
+</td><td>Select Printer
+</tr>
+<tr>
+<td><a href="{% static "images/copy.png" %}" data-lightbox="settings" data-title="Copy to Applications folder"><img src="{% static "images/copy-thumb.png" %}" alt="copy"/></a>
+</td><td>
+<a href="{% static "images/config.png" %}" data-lightbox="settings" data-title='Choosing the "Configure" menu will give you some additional options'><img src="{% static "images/config-thumb.png" %}" alt="Configure"/></a>
+</td><td>
 <a href="{% static "images/default.png" %}" data-lightbox="settings" data-title="After Clicking on a on of the links you will see avaliable printers"><img src="{% static "images/default-thumb.png" %}" alt="default"/>
-
-<a href="{% static "images/config.png" %}" data-lightbox="settings" data-title='Choosing the "Configure" menu will give you some additional options'><img src="{% static "images/config-thumb.png" %}" alt="Configure"/></a></br></br></br>
-
+</td></tr>
+</table>
+</div>
 <script src="{% static "lightbox/js/jquery-1.11.0.min.js"%}"></script>
 <script src="{% static "lightbox/js/lightbox.min.js"%}"></script>
 

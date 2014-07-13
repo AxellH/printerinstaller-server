@@ -1,12 +1,12 @@
 from django.core.exceptions import ValidationError
-from extras import supported_protocols
+from conf import supported_protocols
 def validate_protocol(value):
     # supported_protocols = ['ipp','http','socket','lpd','https']
     # if not value in supported_protocols:
         #raise ValidationError(u'protocol %s is not currently supported' % value)
 	is_supported = False
 
-	for i in supported_protocols:
+	for i in supported_protocols():
 		if i[0] == value:
 			is_supported = True
 			break

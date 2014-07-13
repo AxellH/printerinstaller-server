@@ -3,9 +3,9 @@
 #OS X Setup#
 
 These are examples of how to configre this to function on an OS X Mountian Lion Server (it should also work for Lion)
-It uses the webappctl control, but can also be used with the server app.
+It uses the webappctl control, but can also be used with the printerinstaller app.
 
-this project was forked with the intention of running on sub-path of /printers (eg http://your.server.com/printers)
+this project was forked with the intention of running on sub-path of /printers (eg http://your.printerinstaller.com/printers)
 and that is represented in the included httpd_printerinstaller.conf file with the WSGIScriptAlias line
 
 	WSGIScriptAlias /printers /Library/Server/Web/Data/webapps/printerinstaller.wsgi

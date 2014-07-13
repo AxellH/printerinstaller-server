@@ -5,6 +5,6 @@ settings.py
 printerinstaller.db
 dsa_priv.pem
 serverprinter-installer.log
-server/static/*
-server/files/*
+printerinstaller/static/*
+printerinstaller/files/*/*
 printer-installer.log

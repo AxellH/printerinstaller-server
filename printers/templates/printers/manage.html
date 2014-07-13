@@ -24,7 +24,6 @@
 </tbody>
 </table>
 <a href={% url "printerlist_add" %}>Add List</a>
-
 </br>
 </br>
 <table class="client_info table table-striped table-condensed table-bordered">
@@ -59,4 +58,21 @@
 </tbody>
 </table>
 <a href={% url "printer_add" %}>Add Printer</a>
+</br>
+</br>
+{% if options %}
+<table class="client_info table table-striped table-condensed table-bordered">
+<h4>Printer Options</h4>
+<tbody>
+    {% for option in options %}
+	<tr>	
+		<th><a href={% url "options_edit" option.id %}>{{ option.option }}</a></th>
+		<td><a href={% url "options_delete" option.id %}>Remove</a></td>
+	</tr>
+    {% endfor %}
+
+</tbody>
+</table>
+{% endif %}
+<a href={% url "options_add" %}>Add New Option</a>
 {% endblock %}

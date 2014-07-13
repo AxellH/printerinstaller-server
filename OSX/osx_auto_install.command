@@ -4,7 +4,7 @@
 export PATH="$PATH:/usr/local/bin:/usr/local/sbin:/Applications/Xcode.app/Contents/Developer/usr/bin"
 
 PROJECT_NAME='printerinstaller'
-PROJECT_SETTINGS_DIR="server"
+PROJECT_SETTINGS_DIR="printerinstaller"
 EXAMPLE_SETTINGS_FILE="settings_template.py"
 
 GIT_REPO="https://github.com/eahrold/printerinstaller-server.git"
