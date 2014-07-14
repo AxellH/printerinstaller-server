@@ -8,8 +8,8 @@ PROJECT_NAME='printerinstaller'
 GIT_REPO="https://github.com/eahrold/printerinstaller-server.git"
 GIT_BRANCH="master"
 
-OSX_WEBAPP_PLIST='edu.loyno.smc.printerinstaller.webapp.plist'
-APACHE_SUBPATH='printers'
+OSX_WEBAPP_PLIST="edu.loyno.smc.printerinstaller.webapp.plist"
+APACHE_SUBPATH="printers"
 
 ## you only need to set one of the following two requirements...
 DJANGO_REQUIREMENTS_FILE="setup/requirements.txt"
@@ -25,11 +25,11 @@ OSX_CONF_FILE_DIR="OSX"
 APP_DEFAULT_NAME=${PROJECT_NAME}
 PROJECT_SETTINGS_DIR=${APP_DEFAULT_NAME}
 
-APACHE_CONFIG_FILE='httpd_${APP_DEFAULT_NAME}.conf'
-WSGI_FILE='${APP_DEFAULT_NAME}.wsgi'
+APACHE_CONFIG_FILE="httpd_${APP_DEFAULT_NAME}.conf"
+WSGI_FILE="${APP_DEFAULT_NAME}.wsgi"
 
-USER_NAME=${APP_DEFAULT_NAME}
-GROUP_NAME=${APP_DEFAULT_NAME}
+USER_NAME="${APP_DEFAULT_NAME}"
+GROUP_NAME="${APP_DEFAULT_NAME}"
 
 VIRENV_NAME="${APP_DEFAULT_NAME}_env"
 
@@ -49,8 +49,7 @@ function custom_configuration () {
     # put any custom configurations here 
 }
 
-function custom_apache_configuration () {
-    echo "running custom apache configuration..."
+function custom_apache_configuration () {    
     # put any app specific configurations here
     local static_ppd_alias_str="Alias /ppds/ ${MEDIA_ROOT}/ppds/"
     local static_sparkle_alias_str="Alias /sparkle/ ${MEDIA_ROOT}/sparkle/"
@@ -65,7 +64,10 @@ function custom_apache_configuration () {
 }
 
 function custom_clean_up() {
-    mkdir -m 700 "${PROJECT_PATH}/{$PROJECT_SETTINGS_DIR}/private/"
+    local private_file_dir="${PROJECT_PATH}/${PROJECT_SETTINGS_DIR}/private/"
+    if [ ! -d ${private_file_dir} ]; then
+        mkdir -m 700 "${PROJECT_PATH}/${PROJECT_SETTINGS_DIR}/private/"
+    fi
 }
 
 function prompt_for_settings () {
@@ -77,26 +79,20 @@ cecho red    "##################################################################
 cecho question "First we need to determine what user should own the webapp process" 
 
 while true; do
-cecho purple "[1] create a user ${USER_NAME} and group ${GROUP_NAME}" "(recommended"
-cecho purple "[2] www user" "(if you plan to run on both http(80) and https(443))"
-cecho purple "[3] yourself" "(fine for testing)"
+cecho purple "[1] www user" "(if you plan to run on both http(80) and https(443))"
+cecho purple "[2] create a user ${USER_NAME} and group ${GROUP_NAME}"
     read -e -p "Please Select: " -n 1 -r
-    if [[ $REPLY -eq 1 ]];then
+    if [[ $REPLY -eq 2 ]];then
         make_user_and_group
         if [ $? == 0 ]; then
             break
         else
-            cecho alert "There was a problem creating the user, chose an alternate option (1 or 3)"
+            cecho alert "There was a problem creating the user, you should run as www user [1]"
         fi
-    elif [[ $REPLY -eq 2 ]];then
+    elif [[ $REPLY -eq 1 ]];then
         USER_NAME='www'
         GROUP_NAME='www'
         break
-    elif [[ $REPLY -eq 3 ]];then
-        USER_NAME=$(who | grep console | head -1 |awk '{print $1}')
-        GROUP_NAME=$(dscl . read /Users/${USER_NAME} PrimaryGroupID|awk '{print $2}')
-        break   
-    
     fi
 done
 
@@ -114,16 +110,15 @@ if [ -d "/Applications/Server.app" ]; then
 fi
 
 while true; do
-    cecho question "Where would you like to install the virtual environment?"
     if [ "${OSX_SERVER_INSTALL}" == true ]; then
-        cread purple "POSIX compatible path [${OSX_SERVER_SITES_DEFAULT}]:" REPLY_VIR_ENV
+        cread question "Choose virtual environment path [${OSX_SERVER_SITES_DEFAULT}]:" REPLY_VIR_ENV
         if [ ! -z "${REPLY_VIR_ENV}" ]; then
             DJANGO_WEBAPP_VIR_ENV="${REPLY_VIR_ENV}"
         else
             DJANGO_WEBAPP_VIR_ENV="${OSX_SERVER_SITES_DEFAULT}"
         fi
     else
-        cread purple "Set Path: " DJANGO_WEBAPP_VIR_ENV
+        cread notice "Choose virtual environment path: " DJANGO_WEBAPP_VIR_ENV
     fi
     
     #This will make sure there's a trailing slash on the path
@@ -133,7 +128,7 @@ while true; do
         if [ -d  "${DJANGO_WEBAPP_VIR_ENV}" ]; then
             DJANGO_WEBAPP_VIR_ENV="${DJANGO_WEBAPP_VIR_ENV}${VIRENV_NAME}"
             eval_dir DJANGO_WEBAPP_VIR_ENV    
-            cread question "Is this path correct:${DJANGO_WEBAPP_VIR_ENV} [y/n/c]? " yesno
+            cread question "  correct path:${DJANGO_WEBAPP_VIR_ENV} [y/n/c]? " yesno
             if [[ $REPLY =~ ^[Yy]$ ]];then
                     break
             elif [[ $REPLY =~ ^[Cc]$ ]];then
@@ -149,7 +144,7 @@ while true; do
 done
 
 while true; do
-    cread question "Do you want to run on an apache subpath ${APACHE_SUBPATH}? [y/n]" yesno
+    cread question "Do you want to run on an apache subpath \"${APACHE_SUBPATH}\"? [y/n]" yesno
     if [[ $REPLY =~ ^[Yy]$ ]];then
         RUN_ON_SUBPATH=true
         break
@@ -170,7 +165,7 @@ while true; do
     fi  
 done
 
-HOST_NAME=`scutil --get HostName`
+HOST_NAME=$(scutil --get HostName)
 while true; do
     cread question "Set ALLOWED_HOST as this: $HOST_NAME [y/n]? " yesno
     if [[ $REPLY =~ ^[Yy]$ ]];then
@@ -191,15 +186,20 @@ function install {
     
 ### Clone the Project into the New Virtual Environment
     PROJECT_PATH="${DJANGO_WEBAPP_VIR_ENV}/${PROJECT_NAME}"
-    git clone $GIT_REPO "${DJANGO_WEBAPP_VIR_ENV}/${PROJECT_NAME}"
+    if [ ! -d "${PROJECT_PATH}/.git" ] ;then
+        git clone -b "${GIT_BRANCH}" "${GIT_REPO}" "${DJANGO_WEBAPP_VIR_ENV}/${PROJECT_NAME}"
+    else
+        cecho red "a git repo already exists at that path"
+    fi
+
     cd "${DJANGO_WEBAPP_VIR_ENV}"
 
     source bin/activate
     if [ -f "${PROJECT_PATH}/${DJANGO_REQUIREMENTS_FILE}" ] ;then
         pip install -r "${PROJECT_PATH}/${DJANGO_REQUIREMENTS_FILE}"
     elif [ ${#DJANGO_PIP_REQUIREMENTS[@]} -gt 0 ]; then
-        for i in ${DJANGO_REQUIREMENTS[@]}; do
-            pip install ${i}
+        for i in "${DJANGO_REQUIREMENTS[@]}"; do
+            pip install "${i}"
         done
     fi
     
@@ -215,8 +215,8 @@ function install {
 ## Initialize the DB and Subsequently Set Permissions
     python ./manage.py syncdb
     
-    for i in ${SOUTH_MANAGED_DJANGO_APPS[@]}; do
-        if [ `ls -l ./${i}/migrations/ | wc -l` -eq 0 ]; then
+    for i in "${SOUTH_MANAGED_DJANGO_APPS[@]}"; do
+        if [ "$(find ./${i}/migrations/ | wc -l)"  -eq 0 ]; then
             python ./manage.py schemamigration ${i} --initial
         else
             python ./manage.py schemamigration ${i} --auto
@@ -224,9 +224,6 @@ function install {
         python ./manage.py migrate ${i}
     done    
     
-## Set Permissions
-    cecho "Setting  User ${USER_NAME} and group ${GROUP_NAME} on `pwd`"
-    chown -R "${USER_NAME}":"${GROUP_NAME}" "${DJANGO_WEBAPP_VIR_ENV}"
     
 ## Install OSX Server Components If needed
     if [ ${OSX_SERVER_INSTALL} == true ];then
@@ -244,20 +241,19 @@ function install {
 }
 
 function configure_settings_file () {
+    cecho blue "Configuring to the settings.py file"
+
     EXAMPLE_SETTINGS_FILE=$(find "${PROJECT_PATH}" -type f \( -iname "*settings*.py" ! -iname "settings.py" \) -print -quit)
-    if [ '$EXAMPLE_SETTINGS_FILE' == "" ] ; then
+    if [ "${EXAMPLE_SETTINGS_FILE}" == "" ] ; then
         cecho red "There was a problem locating the Settings template."
         cecho red "Cannot continue with out this, exiting..."
         exit
     fi
 
-    SETTINGS_FILE="$(dirname ${EXAMPLE_SETTINGS_FILE})/settings.py"
-    
+    SETTINGS_FILE=$(dirname "${EXAMPLE_SETTINGS_FILE}")/settings.py
     cp -i "${EXAMPLE_SETTINGS_FILE}" "${SETTINGS_FILE}"
-
-    cecho purple "Now we'll do some basic configuring to the settings.py file"
-    
-## Generate A Unique Secret Key For Django Site
+   
+    ## Generate A Unique Secret Key For Django Site
     local SECKEY=$(LC_CTYPE=C tr -dc A-Za-z0-9_\!\@\#\$\%\^\*\(\)-+= < /dev/urandom | head -c 50 | xargs)
     ised "SECRET_KEY" "SECRET_KEY = '${SECKEY}'" "${SETTINGS_FILE}"
      
@@ -288,18 +284,32 @@ function install_osx_server_components () {
     STATIC_URL=$(python ./manage.py diffsettings  | grep STATIC_URL  | awk '{print $3}'|sed s/[\'\"\/]//g)
     MEDIA_ROOT=$(python ./manage.py diffsettings  | grep MEDIA_ROOT  | awk '{print $3}'|sed s/[\'\"]//g)
     
-    ### OS X Server default paths
-
-    [[ ! -d "${OSX_SERVER_APACHE_DIR}/webapps/" ]] && mkdir -p "${OSX_SERVER_APACHE_DIR}/webapps/"
-    cp -p "${DJANGO_WEBAPP_VIR_ENV}/${PROJECT_NAME}/${OSX_CONF_FILE_DIR}/${OSX_WEBAPP_PLIST}" "${OSX_SERVER_APACHE_DIR}/webapps/" 
+    write_webapp
     
+    write_apache_config
+    
+    ## copy and configure the .wsgi file
+    [[ ! -d "${OSX_SERVER_WSGI_DIR}/" ]] && mkdir -p "${OSX_SERVER_WSGI_DIR}/"  
+    # cp -p "${DJANGO_WEBAPP_VIR_ENV}/${PROJECT_NAME}/${OSX_CONF_FILE_DIR}/${WSGI_FILE}" "${OSX_SERVER_WSGI_DIR}/"
+    write_wsgi
+
+    local venv_str="VIR_ENV_DIR = \'${DJANGO_WEBAPP_VIR_ENV}\'"
+    ised "VIR_ENV_DIR" "${venv_str}" "${OSX_SERVER_WSGI_DIR}/${WSGI_FILE}"
+
+    cecho info "OS X server items installed. "
+    cecho blue "Open Server.app, select the site, go to Advanced and enable the webapp."
+}
+
+function write_apache_config (){
     ## configure the .conf file
+    cecho info "writing apache configuration file"
+
     local static_files_alias_str="Alias /${STATIC_URL}/ ${STATIC_ROOT}/"
     local daemonprocess_str="WSGIDaemonProcess ${USER_NAME} user=${USER_NAME} group=${GROUP_NAME}"
     local processgroup_str="WSGIProcessGroup ${GROUP_NAME}"
     local wsgiscript_str="WSGIScriptAlias /${APACHE_SUBPATH} ${OSX_SERVER_WSGI_DIR}/${PROJECT_NAME}.wsgi"
     
-    if [ ${USER_NAME} == "www" ]; then
+    if [ "${USER_NAME}" == "www" ]; then
         echo "${wsgiscript_str}" > "${OSX_SERVER_APACHE_DIR}/${APACHE_CONFIG_FILE}"
         echo "${static_files_alias_str}" >> "${OSX_SERVER_APACHE_DIR}/${APACHE_CONFIG_FILE}"
     else
@@ -312,25 +322,12 @@ function install_osx_server_components () {
     fi
 
     custom_apache_configuration
-    
-    ## copy and configure the .wsgi file
-    [[ ! -d "${OSX_SERVER_WSGI_DIR}/" ]] && mkdir -p "${OSX_SERVER_WSGI_DIR}/"  
-    # cp -p "${DJANGO_WEBAPP_VIR_ENV}/${PROJECT_NAME}/${OSX_CONF_FILE_DIR}/${WSGI_FILE}" "${OSX_SERVER_WSGI_DIR}/"
-    write_wsgi
-
-    local venv_str="VIR_ENV_DIR = \'${DJANGO_WEBAPP_VIR_ENV}\'"
-    ised "VIR_ENV_DIR" "${venv_str}" "${OSX_SERVER_WSGI_DIR}/${WSGI_FILE}"
-
-    cecho purple "OS X server items installed. "
-    cecho blue "Open Server.app, select the site, go to Advanced and enable the webapp."
-}
-
-function clean_up () {
-    chmod 700 "${SETTINGS_FILE}"
-    custom_clean_up
 }
 
 function write_webapp () {
+    [[ ! -d "${OSX_SERVER_APACHE_DIR}/webapps/" ]] && mkdir -p "${OSX_SERVER_APACHE_DIR}/webapps/"
+    # cp -p "${DJANGO_WEBAPP_VIR_ENV}/${PROJECT_NAME}/${OSX_CONF_FILE_DIR}/${OSX_WEBAPP_PLIST}" "${OSX_SERVER_APACHE_DIR}/webapps/" 
+
     local dwf="defaults write ${OSX_SERVER_APACHE_DIR}/webapps/$OSX_WEBAPP_PLIST"
     $dwf displayName "$PROJECT_NAME"
     $dwf name "$OSX_WEBAPP_PLIST"
@@ -361,12 +358,22 @@ application = django.core.handlers.wsgi.WSGIHandler()
 EOF
 }
 
+function clean_up () {
+    ## Set Permissions
+    cecho info "Setting owner and group on $(pwd)"
+    chown -R "${USER_NAME}:${GROUP_NAME}" "${DJANGO_WEBAPP_VIR_ENV}" 
+    cecho info "Setting permission on settings.py to 700"
+    chmod 700 "${SETTINGS_FILE}"
+    custom_clean_up
+}
+
+
 function make_user_and_group {
     cecho bold "Checking user and group..."
     local USER_EXISTS=$(dscl . list /Users | grep -c "${USER_NAME}")
     local GROUP_EXISTS=$(dscl . list /Groups | grep -c "${GROUP_NAME}")
     
-    if [ $USER_EXISTS -eq 0 ]; then
+    if [ "$USER_EXISTS" -eq 0 ]; then
         cecho bold "Creating user ${USER_NAME}..."
         
         USER_ID=$(check_ID Users UniqueID)
@@ -377,7 +384,7 @@ function make_user_and_group {
         cecho bold "User ${USER_NAME} already exists, skipping..."
     fi
 
-    if [ $GROUP_EXISTS -eq 0 ]; then
+    if [ "$GROUP_EXISTS" -eq 0 ]; then
         cecho bold "Creating user ${USER_NAME}..."
         GROUP_ID=$(check_ID Groups PrimaryGroupID)
         dseditgroup -o create -i "${GROUP_ID}" -n . "${GROUP_NAME}"
@@ -395,13 +402,13 @@ function make_user_and_group {
 ############################# Requirement Checks ###########
 function requirements_check () {
     git_check
-    root_check
+    root_check "$@"
     virtualenv_check
     custom_precondition_check
 }
 
 function git_check () {
-    if [ -z $(which git) ]] ; then
+    if [ -z "$(which git)" ] ; then
         cecho alert "git is required to procede."
         if [ -x "/usr/bin/xcode-select" ] ; then
             cecho question "would you like to install the xcode developer cli tools [y/n]?" yesno
@@ -429,7 +436,7 @@ function root_check () {
 
 function virtualenv_check () {
     VEV=$(which virtualenv)
-    if [ -z "${VEV}" ]] ; then
+    if [ -z "${VEV}" ] ; then
         cread alert "Python virtualenv must be installed.  Install Now using easy_install [y/n]? " yesno
         if [[ $REPLY =~ ^[Yy]$ ]];then
             easy_install virtualenv
@@ -478,24 +485,24 @@ cread(){
     
     local MESSAGE="${2}"
     local RESET=$(printf "\\e[0m")  
-    if [ -z ${3} ];then
+    if [ -z "${3}" ];then
         read -e -p "${COLOR}${MESSAGE}${RESET} "
-    elif [ ${3} == "yesno" ]; then
+    elif [ "${3}" == "yesno" ]; then
         read -e -p "${COLOR}${MESSAGE}${RESET} " -n 1 -r
     else
         read -e -p "${COLOR}${MESSAGE}${RESET} " VAR
-        eval $3="'$VAR'"
+        eval "$3"='$VAR'
     fi
 }
 
 check_ID(){
     # $1 is the dscl path and $2 is the Match
-    local ID=$(/usr/bin/dscl . list /$1 $2 | awk '{print $2}'| grep '[4][0-9][0-9]'| sort| tail -1)
+    local ID=$(/usr/bin/dscl . list /"$1" "$2" | awk '{print $2}'| grep '[4][0-9][0-9]'| sort| tail -1)
     [[ -n $ID ]] && ((ID++)) || ID=400
         
     while true; do
-        local IDCK=$(/usr/bin/dscl . list /$1 $2 | awk '{print $2}'| grep -c ${ID})
-        if [ $IDCK -eq 0 ]; then
+        local IDCK=$(/usr/bin/dscl . list /"$1" "$2" | awk '{print $2}'| grep -c ${ID})
+        if [ "$IDCK" -eq 0 ]; then
             break
         else
             cecho alert "That %2 is in use"
@@ -507,19 +514,19 @@ check_ID(){
         cecho alert "exiting script."
         exit 1
     fi
-    echo $ID     
+    echo "$ID"    
 }
 
 eval_dir(){  
 # pass the name of the variable you want to eval
 # so you would pass MYVAR rather than $MYVAR    
-    eval local __myvar=${!1} 2>/dev/null
+    eval local __myvar="${!1}" 2>/dev/null
     if [ $? == 0 ]; then    
         local __len=${#__myvar}-1
-        if [ "${__myvar:__len}" != "/" ]; then
+        if [ "${__myvar:$__len}" != "/" ]; then
           __myvar=$__myvar"/"
         fi
-        eval $1="'$__myvar'"
+        eval "$1"="$__myvar"
     else
         return 1
     fi
@@ -534,7 +541,7 @@ ised(){
 ###
 __main__ () {
     ## check that
-    requirements_check
+    requirements_check "$@"
 
     ## get info from the user
     prompt_for_settings
