@@ -15,9 +15,13 @@
 		<font size="4"><b>Click on a list</b></font></br>
 		<font size="1"><i>this will automatically populate the Printer-Installer menu</i></font>
 {% if printerlists %}
+<ul class="list-group">
     {% for list in printerlists %}
-		<pre>  <a href="{{ domain }}/{{ list.name }}">{{ list.name }}</a></pre>
+    <li class="list-group-item">
+		<a href="{{ domain }}/{{ list.name }}">{{ list.name }}</a>
+	</li>
     {% endfor %}
+</ul>
 </br>
 </br>	
 {% else %}

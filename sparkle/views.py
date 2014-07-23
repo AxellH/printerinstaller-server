@@ -1,8 +1,9 @@
 from django.shortcuts import render_to_response, get_object_or_404, render, redirect
-from django.contrib.sites.models import Site
+from django.contrib.sites.models import Site, RequestSite
 from django.template.loader import get_template
 from django.template import RequestContext, Template, Context, loader
 from django.contrib.auth.decorators import login_required, permission_required
+from printerinstaller.utils import site_info
 from forms import *
 from sparkle.models import *
 from validators import *
@@ -101,8 +102,8 @@ def version_activate(request, id):
 
 def appcast(request, name):
     """Generate the appcast for the given application while recording any system profile reports"""
-
     application = get_object_or_404(Application, name=name)
+    site = site_info(request)
 
     # if there are get parameters from the system profiling abilities
     if len(request.GET):
@@ -116,8 +117,8 @@ def appcast(request, name):
     versions = Version.objects.filter(application__name=name, active=True).order_by('-published')
 
     # get the current site for the domain
-    site = Site.objects.get_current()
-
+    # site = Site.objects.get_current()
+    
     return render_to_response('sparkle/appcast.xml', {'application': application, 'versions': versions, 'site': site})
 
 

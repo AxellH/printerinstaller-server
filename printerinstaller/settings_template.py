@@ -6,31 +6,27 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 ##  Configure printerinstaller server specific items ##
 #######################################################
 
-# Full Host name and port of server
-# e.g http://127.0.0.1:8000
-SERVER_HOST_NAME = "http://127.0.0.1:8000"
 
-# Set this to true if you're running on Apache via wsgi module
-RUNNING_ON_APACHE=False
-
-# set this to True if you want to run on a subpath 
-# the default path will be printers/
-RUN_ON_SUBPATH=False
+# Set to true if you want the ability to upload and 
+# server PPD files and Sparkle update
+SERVE_FILES=True
 
 # Configuring Sparkle Updates
-# if set to True you will be able to upload versions of Printer-Installer.app 
-# and it will automatically create AppCasts for Sparkle, otherwise it will use the GITHUB_APPCAST_URL.
-# If set to False it will use the appcast at the master github page, you can override this value below.
+# if set to True you will be able to upload versions of
+# Printer-Installer.app and it will automatically create AppCasts
+# for Sparkle, otherwise it will use the GITHUB_APPCAST_URL.
 HOST_SPARKLE_UPDATES=True
 
-# Set to true if you want to server PPD files
-SERVE_FILES=True
+# Set this to True to disable the 'django.views.static.serve'
+RUNNING_ON_APACHE=True
 
 # If not hosting sparkle updates, it will use this url for AppCasts.
 # If building a custom version of Printer-Installer.app to provide a
 # print quota software for your environment set this to your forks URL
 GITHUB_APPCAST_URL="https://raw.githubusercontent.com/eahrold/Printer-Installer/master/Downloads/appcast.xml"
 
+# If not hosting sparkle updates, set these to the
+GITHUB_LATEST_RELEASE = {'user':'eahrold','repo':'Printer-Installer'}
 #################################################
 ##  End printerinstaller server specific items ##
 #################################################
@@ -84,30 +80,14 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
-## Configure the subpath to run the Django App on
-if RUN_ON_SUBPATH:
-    SUB_PATH = 'printers/'
-else:
-    SUB_PATH=''
-
-if HOST_SPARKLE_UPDATES:
-    APPCAST_URL=os.path.join(SERVER_HOST_NAME,
-                                        SUB_PATH,
-                                        'sparkle/Printer-Installer/appcast.xml',
-                                         )
-else:
-    APPCAST_URL=GITHUB_APPCAST_URL
-    
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = os.path.join(PROJECT_DIR, 'files')
-
-SPARKLE_PRIVATE_KEY_PATH=os.path.join(MEDIA_ROOT, 'private','dsa_priv.pem')
+MEDIA_ROOT = os.path.join(PROJECT_DIR, 'files/')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
-MEDIA_URL = SERVER_HOST_NAME + "/"
+MEDIA_URL = '/files/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -117,10 +97,7 @@ STATIC_ROOT = os.path.join(PROJECT_DIR, 'static/')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-if RUNNING_ON_APACHE == True:
-    STATIC_URL = '/static_printerinstaller/'
-else:
-    STATIC_URL = os.path.join('/',SUB_PATH,'static/')
+STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -130,9 +107,9 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_DIR, 'site_static'),
 )
 
-LOGIN_URL=os.path.join('/',SUB_PATH,'login/')
-LOGOUT_URL=os.path.join('/',SUB_PATH,'logout/')
-LOGIN_REDIRECT_URL=os.path.join('/',SUB_PATH)
+LOGIN_URL='django.contrib.auth.views.login'
+LOGOUT_URL='django.contrib.auth.views.logout'
+LOGIN_REDIRECT_URL='printers.views.manage'
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -246,5 +223,3 @@ if 'DYNO' in os.environ:
     # If serving from heroku disable the ability to server files
     HOST_SPARKLE_UPDATES = False
     SERVE_FILES=False
-
-

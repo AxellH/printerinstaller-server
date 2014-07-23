@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
     <channel>
         <title>{{ application.name }}</title>
-        <link>http://{{ site.domain }}{% url 'sparkle_application_appcast' application.name %}</link>
+        <link>{{ site.root }}{% url 'sparkle_application_appcast' application.name %}</link>
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         {% for version in versions %}<item>
@@ -12,7 +12,7 @@
                 {% if version.minimum_system_version %}
                     <sparkle:minimumSystemVersion>{{ version.minimum_system_version }}</sparkle:minimumSystemVersion>
                 {% endif %}
-                <enclosure url="{{ version.update.url }}" 
+                <enclosure url="{{ site.root }}{{ version.update.url }}" 
                     sparkle:version="{{ version.version }}" 
                     length="{{ version.length }}" type="application/octet-stream" 
                 {% if version.short_version %}

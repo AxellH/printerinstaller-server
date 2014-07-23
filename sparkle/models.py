@@ -55,8 +55,6 @@ class Version(models.Model):
             pks = PrivateKey.objects.all()[:1].get()
             if pks:
                 spk=pks.private_key.path
-            else:
-                spk=getattr(settings, 'SPARKLE_PRIVATE_KEY_PATH', None)
 
             if spk or not self.dsa_signature:
                 if os.path.exists(spk):

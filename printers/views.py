@@ -12,7 +12,7 @@ from models import *
 from forms import *
 
 from sparkle.models import *
-from printerinstaller.utils import github_latest_release
+from printerinstaller.utils import github_latest_release, site_info
 
 def index(request):
     printerlists = PrinterList.objects.filter(public=True)
@@ -23,15 +23,12 @@ def index(request):
             version_url = version[0].update.url
     
     if not version_url:
-        version_url = github_latest_release('eahrold','Printer-Installer')
+        version_url = github_latest_release(settings.GITHUB_LATEST_RELEASE)
 
     host = request.get_host()
-    subpath = settings.SUB_PATH
-    if request.is_secure():
-        scheme = 'printerinstallers'
-    else:
-        scheme = 'printerinstaller'
-        
+    subpath = request.META.get('SCRIPT_NAME')
+    scheme = request.is_secure() and 'printerinstallers' or 'printerinstaller'
+
     pr_uri = urlunparse([scheme,host,subpath,None,None,None])
     context = {'domain':pr_uri,'printerlists': printerlists, 'version':version_url}
     
@@ -189,13 +186,18 @@ def getlist(request, name):
     plist = []
     
     if settings.SERVE_FILES and Version.objects.all():
-        updateServer = settings.APPCAST_URL
+        _site_info = site_info(request)
+        updateServer=os.path.join(_site_info['root'],
+                                    _site_info['subpath'],
+                                    'sparkle/Printer-Installer/appcast.xml',
+                                    )
     else:
         updateServer = settings.GITHUB_APPCAST_URL
 
+
     for p in printers:
         if(p.ppd_file):
-            ppd_url=p.ppd_file.url
+            ppd_url=os.path.join(_site_info['root'])+p.ppd_file.url
         else:
             ppd_url=''
             
