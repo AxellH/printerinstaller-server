@@ -51,19 +51,21 @@ function custom_configuration () {
 
 function custom_apache_configuration () {    
     # put any app specific configurations here
-    local static_ppd_alias_str="Alias /ppds/ ${MEDIA_ROOT}/ppds/"
-    local static_sparkle_alias_str="Alias /sparkle/ ${MEDIA_ROOT}/sparkle/"
+    local media_root_alias="Alias /files_${PROJECT_NAME}/ ${MEDIA_ROOT}"
 
     if [ ${USER_NAME} == "www" ]; then
-        echo "${static_ppd_alias_str}" >> "${OSX_SERVER_APACHE_DIR}/${APACHE_CONFIG_FILE}"
-        echo "${static_sparkle_alias_str}" >> "${OSX_SERVER_APACHE_DIR}/${APACHE_CONFIG_FILE}"
+        echo "${media_root_alias}" >> "${OSX_SERVER_APACHE_DIR}/${APACHE_CONFIG_FILE}"
+        echo "" >> "${OSX_SERVER_APACHE_DIR}/${APACHE_CONFIG_FILE}"
+        echo "<Location /files_${PROJECT_NAME}/private/>" >> "${OSX_SERVER_APACHE_DIR}/${APACHE_CONFIG_FILE}"
+        echo "    Order Allow,Deny" >> "${OSX_SERVER_APACHE_DIR}/${APACHE_CONFIG_FILE}"
+        echo "    Deny from  all" >> "${OSX_SERVER_APACHE_DIR}/${APACHE_CONFIG_FILE}"
+        echo "</Location>" >> "${OSX_SERVER_APACHE_DIR}/${APACHE_CONFIG_FILE}"
     else        
-        ised "Alias /ppds/" "${static_ppd_alias_str}" "${OSX_SERVER_APACHE_DIR}/${APACHE_CONFIG_FILE}"
-        ised "Alias /sparkle/" "${static_sparkle_alias_str}" "${OSX_SERVER_APACHE_DIR}/${APACHE_CONFIG_FILE}"
+        ised "Alias /files_${PROJECT_NAME}/" "${media_root_alias}" "${OSX_SERVER_APACHE_DIR}/${APACHE_CONFIG_FILE}"
     fi
 }
 
-function custom_clean_up() {
+function custom_clean_up () {
     local private_file_dir="${PROJECT_PATH}/${PROJECT_SETTINGS_DIR}/private/"
     if [ ! -d ${private_file_dir} ]; then
         mkdir -m 700 "${PROJECT_PATH}/${PROJECT_SETTINGS_DIR}/private/"
@@ -167,16 +169,28 @@ done
 
 HOST_NAME=$(scutil --get HostName)
 while true; do
-    cread question "Set ALLOWED_HOST as this: $HOST_NAME [y/n]? " yesno
+    cread question "Set Site HostName:[default: $HOST_NAME]? " TMP_HOST_NAME
+    if [ ! -z "${TMP_HOST_NAME}" ]; then
+        HOST_NAME="${TMP_HOST_NAME}"
+    fi
+    cread question "Is this Correct? ${HOST_NAME} [y/n]? " yesno
     if [[ $REPLY =~ ^[Yy]$ ]];then
-        SET_ALLOWED_HOST=true
         break
-    elif [[ $REPLY =~ ^[Nn]$ ]]; then
-        SET_ALLOWED_HOST=false
-        echo "you will need to edit this in the settings.py file once we're done."
-        break
-    fi  
+    fi 
 done
+
+START_WEBAPP_ON_DEFAULT=false
+if [ "${USER_NAME}" == 'www' ]; then 
+	while true; do
+		cread question "Do you want to enable the webapp on the default sites ( *:80 and *:443 ) [y/n]? " yesno
+	    if [[ $REPLY =~ ^[Yy]$ ]];then
+			START_WEBAPP_ON_DEFAULT=true
+	        break
+	    elif [[ $REPLY =~ ^[Nn]$ ]] ; then
+	        break
+	    fi  
+	done
+fi
 }
 
 function install {
@@ -189,7 +203,7 @@ function install {
     if [ ! -d "${PROJECT_PATH}/.git" ] ;then
         git clone -b "${GIT_BRANCH}" "${GIT_REPO}" "${DJANGO_WEBAPP_VIR_ENV}/${PROJECT_NAME}"
     else
-        cecho red "a git repo already exists at that path"
+        cecho red "The project already exists"
     fi
 
     cd "${DJANGO_WEBAPP_VIR_ENV}"
@@ -206,15 +220,13 @@ function install {
     cd "${PROJECT_PATH}"
         
     configure_settings_file
-    
-    python ./manage.py collectstatic --noinput
+    configure_site_fixture
 
-## Perform any needed Custom Configuration 
-    custom_configuration
+    python ./manage.py collectstatic --noinput
     
 ## Initialize the DB and Subsequently Set Permissions
     python ./manage.py syncdb
-    
+
     for i in "${SOUTH_MANAGED_DJANGO_APPS[@]}"; do
         if [ "$(find ./${i}/migrations/ | wc -l)"  -eq 0 ]; then
             python ./manage.py schemamigration ${i} --initial
@@ -223,7 +235,9 @@ function install {
         fi
         python ./manage.py migrate ${i}
     done    
-    
+ 
+## Perform any needed Custom Configuration 
+    custom_configuration   
     
 ## Install OSX Server Components If needed
     if [ ${OSX_SERVER_INSTALL} == true ];then
@@ -251,30 +265,49 @@ function configure_settings_file () {
     fi
 
     SETTINGS_FILE=$(dirname "${EXAMPLE_SETTINGS_FILE}")/settings.py
-    cp -i "${EXAMPLE_SETTINGS_FILE}" "${SETTINGS_FILE}"
+    cp "${EXAMPLE_SETTINGS_FILE}" "${SETTINGS_FILE}"
    
     ## Generate A Unique Secret Key For Django Site
     local SECKEY=$(LC_CTYPE=C tr -dc A-Za-z0-9_\!\@\#\$\%\^\*\(\)-+= < /dev/urandom | head -c 50 | xargs)
     ised "SECRET_KEY" "SECRET_KEY = '${SECKEY}'" "${SETTINGS_FILE}"
      
-    if [ ${RUN_ON_SUBPATH} == true ]; then
-        ised "RUN_ON_SUBPATH=" "RUN_ON_SUBPATH=True" "${SETTINGS_FILE}"
+    if [ "${RUN_ON_SUBPATH}" == true ]; then
+        ised "APACHE_RUN_ON_SUBPATH=" "APACHE_RUN_ON_SUBPATH=True" "${SETTINGS_FILE}"
     else
         APACHE_SUBPATH=""
-        ised "RUN_ON_SUBPATH=" "RUN_ON_SUBPATH=False" "${SETTINGS_FILE}"
+        ised "APACHE_RUN_ON_SUBPATH=" "APACHE_RUN_ON_SUBPATH=False" "${SETTINGS_FILE}"
     fi
 
-    if [ ${OSX_SERVER_INSTALL} == true ]; then
+    if [ "${OSX_SERVER_INSTALL}" == true ]; then
         ised "RUNNING_ON_APACHE=" "RUNNING_ON_APACHE=True" "${SETTINGS_FILE}"
     fi
 
-    if [ ${RUN_IN_DEBUG} == true ] ; then
+    if [ "${RUN_IN_DEBUG}" == true ] ; then
         ised "DEBUG=" "DEBUG=True" "${SETTINGS_FILE}"
     fi
 
-    if [ ${SET_ALLOWED_HOST} == true ] ; then 
+    if [ "${SET_ALLOWED_HOST}" == true ] ; then 
         ised "ALLOWED_HOSTS=" "ALLOWED_HOSTS=['${HOST_NAME}']" "${SETTINGS_FILE}"
     fi
+}
+
+function configure_site_fixture () {
+SITE_FIXTURE="${PROJECT_PATH}/host_name_fixture.json"
+cat <<EOF > "${SITE_FIXTURE}"
+[
+    {
+        "pk": 1,
+        "model": "sites.site",
+        "fields": {
+        "name": "${HOST_NAME}",
+        "domain":"${HOST_NAME}"
+        }
+    }
+]
+EOF
+
+python ./manage.py loaddata "${SITE_FIXTURE}"
+# rm "${SITE_FIXTURE}"
 }
 
 function install_osx_server_components () {
@@ -297,7 +330,11 @@ function install_osx_server_components () {
     ised "VIR_ENV_DIR" "${venv_str}" "${OSX_SERVER_WSGI_DIR}/${WSGI_FILE}"
 
     cecho info "OS X server items installed. "
-    cecho blue "Open Server.app, select the site, go to Advanced and enable the webapp."
+	if [ "${START_WEBAPP_ON_DEFAULT}" == true ]; then
+		webappctl status "${OSX_WEBAPP_PLIST}"
+	else
+		cecho blue "To enable the webapp, Open Server.app, select the site, go to Advanced and enable the webapp."
+	fi
 }
 
 function write_apache_config (){

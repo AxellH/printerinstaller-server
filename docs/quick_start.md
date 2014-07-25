@@ -34,18 +34,21 @@
 	sudo chown -R printerinstaller printerinstaller_env
 	sudo su ; su printerinstaller
 	  
-###turn on the virtual env	
+###turn on the virtual env
 	cd printerinstaller_env
     source bin/activate
 	
 ###insatll printerinstaller_server
 	
 	git clone https://github.com/eahrold/printerinstaller-server.git printerinstaller
-	
+
+###cd into the Directory
+
+	cd printerinstaller 
+
 ###install prerequistis
 
-	pip install django
-	pip install django-bootstrap_toolkit
+	pip install -r setup/requirements.txt
 	
 ### configure the app settings
 
@@ -55,16 +58,14 @@
 	python manage.py collectstatic
 	python manage.py syncdb
 	
-	python manage.py runprinterinstaller
-
-During initial testing, in the settings.py file you'll want to set
+During initial testing, in order to server static files,  you'll want to set 
 	
 	RUNNING_ON_APACHE=False
 
-If ultimatley running via WSGI module on Apache, using the subpath /printers, when the time comes, changed this to 
+in the settings.py.  If ultimatley running via WSGI module on apache change it back
 
 	RUNNING_ON_APACHE=True
 
 </br>
 ### Additional OS X setup
-Other tid-bits for OSX Server.app [Setup instructions](https://github.com/eahrold/printerinstaller-printerinstaller/blob/devel/OSX/OS X Install instructions.md)
+Other tid-bits for OSX Server.app [Setup instructions](./OS X Install instructions.md)
