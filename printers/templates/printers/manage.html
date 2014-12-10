@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block nav %}
+{% include "printers/nav.html" %}
+{% endblock %}
+
+{% block content %}
+<table class="client_info table table-striped table-condensed table-bordered">
+<h4>Printer Lists</h4>
+<tbody>
+{% if printerlists %}
+    {% for list in printerlists %}
+	<tr>	
+		<th><a href={% url "printerlist_edit" list.id %}>{{ list.name }}</a></th>
+		<td><a href={% url "printerlist_details" list.id %}>number of printers in list: {{list.printer.count}}</a>
+        <td><a href={% url "printerlist_public" list.id %}>Public: {{list.public}}</a>
+		<td><a href={% url "printerlist_delete" list.id %}>Remove</a></td>
+	</tr>
+    {% endfor %}
+{% else %}
+    <p>No printer lists are available.</br>
+{% endif %}
+</tbody>
+</table>
+<a href={% url "printerlist_add" %}>Add List</a>
+</br>
+</br>
+<table class="client_info table table-striped table-condensed table-bordered">
+<h4>Printers</h4>
+<tbody>
+{% if printers %}
+<th>Name</th>
+<th>Description</th>
+<th>Host/Server</th>
+<th>Protocol</th>
+<th>Model</th>
+<th>Location</th>
+<th>PPD Provided</th>
+<th>Number of Options</th>
+<td></td>
+    {% for printer in printers %}
+	<tr>
+		<th><a href={% url "printer_edit" printer.id %}>{{ printer.name }}</a></th>
+		<td>{{ printer.description }}</td>
+		<td>{{ printer.host }}</td>
+		<td>{{ printer.protocol }}</td>
+		<td>{{ printer.model }}</td>
+		<td>{{ printer.location }}</td>
+		<td>{% if printer.ppd_file %}<a href={{ printer.ppd_file.url}}>YES{% else %}NO{% endif %}</td>
+		<td>{{ printer.option.count }}</td>
+		<td><a href={% url "printer_delete" printer.id %}>Remove</a></td>
+	</tr>
+    {% endfor %}
+{% else %}
+    <p>No printers are available.</p>
+{% endif %}
+</tbody>
+</table>
+<a href={% url "printer_add" %}>Add Printer</a>
+</br>
+</br>
+{% if options %}
+<table class="client_info table table-striped table-condensed table-bordered">
+<h4>Printer Options</h4>
+<tbody>
+    {% for option in options %}
+	<tr>	
+		<th><a href={% url "options_edit" option.id %}>{{ option.option }}</a></th>
+		<td><a href={% url "options_delete" option.id %}>Remove</a></td>
+	</tr>
+    {% endfor %}
+
+</tbody>
+</table>
+{% endif %}
+<a href={% url "options_add" %}>Add New Option</a>
+{% endblock %}

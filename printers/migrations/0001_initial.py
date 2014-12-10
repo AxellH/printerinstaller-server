@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import datetime
+from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
@@ -20,11 +20,11 @@ class Migration(SchemaMigration):
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('description', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
-            ('location', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
-            ('model', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('ppd_file', self.gf('django.db.models.fields.files.FileField')(max_length=100)),
-            ('url', self.gf('django.db.models.fields.CharField')(max_length=200)),
+            ('host', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('protocol', self.gf('django.db.models.fields.CharField')(max_length=200)),
+            ('location', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
+            ('model', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
+            ('ppd_file', self.gf('django.db.models.fields.files.FileField')(max_length=100, blank=True)),
         ))
         db.send_create_signal(u'printers', ['Printer'])
 
@@ -41,6 +41,7 @@ class Migration(SchemaMigration):
         db.create_table(u'printers_printerlist', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
+            ('public', self.gf('django.db.models.fields.BooleanField')(default=True)),
         ))
         db.send_create_signal(u'printers', ['PrinterList'])
 
@@ -80,20 +81,21 @@ class Migration(SchemaMigration):
         u'printers.printer': {
             'Meta': {'object_name': 'Printer'},
             'description': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
+            'host': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'location': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
+            'model': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'option': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['printers.Option']", 'symmetrical': 'False', 'blank': 'True'}),
-            'ppd_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
-            'protocol': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'url': ('django.db.models.fields.CharField', [], {'max_length': '200'})
+            'ppd_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'blank': 'True'}),
+            'protocol': ('django.db.models.fields.CharField', [], {'max_length': '200'})
         },
         u'printers.printerlist': {
             'Meta': {'object_name': 'PrinterList'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'printer': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['printers.Printer']", 'symmetrical': 'False', 'blank': 'True'})
+            'printer': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['printers.Printer']", 'symmetrical': 'False', 'blank': 'True'}),
+            'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'})
         }
     }
 

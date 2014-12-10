@@ -1,58 +1,52 @@
 {% extends "base.html" %}
+
+{% load staticfiles %}
 {% load i18n %}
 
 {% block nav %}
-{% include "printers/nav.html" %}
+<li><a href={%url "manage" %}>Manage</a></li>
 {% endblock %}
-
 {% block content %}
-<table class="client_info table table-striped table-condensed table-bordered">
-<h4>Printer Lists</h4>
-<tbody>
+{% if version %}
+	<link href="{% static "lightbox/css/lightbox.css"%}" rel="stylesheet" />
+		<font size="4"><b><a href={{version}}>Download the Printer-Installer Client</a></b></font></br>
+		<font size="1"><i>Copy this into your applications folder,<b> then open it once!</i></font></b></br></br></br>
+{% endif %}
+		<font size="4"><b>Click on a list</b></font></br>
+		<font size="1"><i>this will automatically populate the Printer-Installer menu</i></font>
 {% if printerlists %}
     {% for list in printerlists %}
-	<tr>	
-		<th><a href={% url "printerlist_edit" list.id %}>{{ list.name }}</a></th>
-		<td><a href={% url "printerlist_details" list.id %}>number of printers in list: {{list.printer.count}}</a>
-		<td><a href={% url "printerlist_delete" list.id %}>Remove</a></td>
-	</tr>
+		<pre>  <a href="{{ domain }}/{{ list.name }}">{{ list.name }}</a></pre>
     {% endfor %}
+</br>
+</br>	
 {% else %}
     <p>No printer lists are available.</br>
 {% endif %}
-</tbody>
-</table>
-<a href={% url "printerlist_add" %}>Add List</a>
 
-</br>
-</br>
-<table class="client_info table table-striped table-condensed table-bordered">
-<h4>Printers</h4>
-<tbody>
-{% if printers %}
-<th>Name</th>
-<th>Description</th>
-<th>Model</th>
-<th>Location</th>
-<th>PPD File</th>
-<th>Option Count</th>
-<td></td>
-    {% for printer in printers %}
-	<tr>
-		<th><a href={% url "printer_edit" printer.id %}>{{ printer.name }}</a></th>
-		<td>{{ printer.description }}</td>
-		<td>{{ printer.model }}</td>
-		<td>{{ printer.location }}</td>
-		<td>{% if printer.ppd_file %}{{ printer.ppd_file.url}}{% endif %}</td>
-		<td>Number of Options: {{ printer.option.count }}</td>
-		<td><a href={% url "printer_delete" printer.id %}>Remove</a></td>
-	</tr>
-    {% endfor %}
-{% else %}
-    <p>No printers are available.</p>
-{% endif %}
-</tbody>
+{% if version %}
+<font size="4"><b>Install Process</b></font></br>
+<div class="table-responsive hideOverflow">
+<table>
+<tr>
+<td>Copy
+</td><td>Configure
+</td><td>Select Printer
+</tr>
+<tr>
+<td><a href="{% static "images/copy.png" %}" data-lightbox="settings" data-title="Copy to Applications folder"><img src="{% static "images/copy-thumb.png" %}" alt="copy"/></a>
+</td><td>
+<a href="{% static "images/config.png" %}" data-lightbox="settings" data-title='Choosing the "Configure" menu will give you some additional options'><img src="{% static "images/config-thumb.png" %}" alt="Configure"/></a>
+</td><td>
+<a href="{% static "images/default.png" %}" data-lightbox="settings" data-title="After Clicking on a on of the links you will see avaliable printers"><img src="{% static "images/default-thumb.png" %}" alt="default"/>
+</td></tr>
 </table>
-<a href={% url "printer_add" %}>Add Printer</a>
+</div>
+<script src="{% static "lightbox/js/jquery-1.11.0.min.js"%}"></script>
+<script src="{% static "lightbox/js/lightbox.min.js"%}"></script>
+
+{% endif %}
+<h4></h4>
 
 {% endblock %}
+

@@ -10,9 +10,6 @@ site.addsitedir(os.path.join(VIR_ENV_DIR, 'lib/python2.7/site-packages'))
 # Make sure we have the virtualenv and the Django app itself added to our path
 sys.path.append(VIR_ENV_DIR)
 sys.path.append(os.path.join(VIR_ENV_DIR, 'printerinstaller'))
-
-os.environ['DJANGO_SETTINGS_MODULE'] = 'server.settings'
-
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "printerinstaller.settings")
 import django.core.handlers.wsgi
 application = django.core.handlers.wsgi.WSGIHandler()
-

@@ -1,24 +1,36 @@
 from django import forms
 from django.forms import ModelForm, Select
+from django.conf import settings
+
 from models import *
+from validators import *
+from conf import supported_protocols
 
 class PrinterListForm(forms.ModelForm):
     class Meta:
         model = PrinterList
     printer = forms.ModelMultipleChoiceField(queryset=Printer.objects.all(),widget = forms.CheckboxSelectMultiple,required=False)
         
-class OptionsForm(forms.ModelForm):
+class OptionForm(forms.ModelForm):
     class Meta:
         model = Option
+
+    option=forms.CharField(max_length=50,label='Option*',help_text='should conform to syntax from lpoptions -l')
+
     
 class PrinterForm(forms.ModelForm):
     class Meta:
         model = Printer
+        if not settings.SERVE_FILES:
+            exclude = ('ppd_file',)
     
-    model=forms.CharField(max_length=100,label='Printer Model',help_text='As Listed with lpinfo -m')
-    name=forms.CharField(max_length=100,label='Priner Name',help_text='CUPS compliant name, No spaces or CAPS, must start with letter')
-    url=forms.CharField(max_length=100,label='Server HostName',help_text='Please Specify FQDN')
-    ppd_file = forms.FileField(label='PPD File', required=False)
-    new_option = forms.CharField(max_length=100,required=False)
+    name=forms.CharField(max_length=50,label='Priner Name*',help_text='CUPS compliant name, No spaces or CAPS, must start with letter',validators=[validate_printer_name])
+    protocol = forms.ChoiceField(choices=supported_protocols(), label='Protocol*',validators=[validate_protocol])
+    host=forms.CharField(max_length=50,label='Host*',help_text='(FQDN or IP Address of printer or server)')
+    model=forms.CharField(max_length=50,label='Printer Model',help_text='(As Listed with lpinfo -m)',required=False)
     option = forms.ModelMultipleChoiceField(queryset=Option.objects.all(),widget = forms.CheckboxSelectMultiple,required=False)
+    new_option = forms.CharField(max_length=50,required=False)
     
+
+
+        

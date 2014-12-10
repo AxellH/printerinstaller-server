@@ -1,4 +1,11 @@
-<li><a href={%url "index" %}>Home</a></li>
+<li class="dropdown"><a class="dropdown-toggle" id="dLabel" data-toggle="dropdown" data-target="#" href={%url "manage" %}>
+Manage
+<b class="caret"></b>
+</a>
+<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+<li><a href={%url "manage" %}>Printers & Lists</a></li>
+{% if update_server %}
 <li><a href={%url "su-index" %}>Update Server</a></li>
-<li><a href={%url "options_list" %}>Manage Options</a></li>
-
+{% endif %}
+</ul>
+</li>

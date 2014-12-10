@@ -1,80 +1,29 @@
 #Printer-Installer Server
 
-a basic django webserver interface for providing the printer list to the Printer-Installer.app
+A django website for the [Printer-Installer client][pi_client]
 
+###Front Page
+
+![front][front]
+
+###Manage Printers
+![manage][manage]
 
 ##Auto Install Script
-For the simplest installation, run the osx_auto-insatll.command script located in the OSX folder, in the root of this repo.
-It's only for OS X Server.app 10.7 and above. 
+For the simplest installation on OS X Server 10.7 or higher, run the auto install script by copy and pasting this into your terminal.
+```
+curl -L https://raw.github.com/eahrold/printerinstaller-server/master/OSX/osx_auto_install.command > /tmp/run.sh; chmod u+x /tmp/run.sh ; /tmp/run.sh
 
-##Quick Start
+```
 
-###if you don't have virturalenv install it
+The script is also avaliable from the OSX folder in the root of this repo.
 
-	sudo easy_install virturalenv
-	
-###then create your virtural env
-	
-	cd /path/to/www/
-	virtualenv printerinstaller_env
+###Quick Start
+To manually setup and configure, you can use [this quick start guide][quick-start]
 
-
-###make a user  and group
-*Get the last user and group in the 400's,  if this command returns nothing than you can set the UniqueID and GroupID to 400*
-*This next part is a guide, and will not work if you have a user that is 499, user your best judgment
-
-	USER_ID=$(dscl . list /Users UniqueID | awk '{print $2}'| grep '[4][0-9][0-9]'| sort| tail -1)
-	[[ -n $USER_ID ]] && ((USER_ID++)) || USER_ID=400
-	
-	GROUP_ID=$(dscl. list /Groups PrimaryGroupID | awk '{print $2}'| grep '[4][0-9][0-9]'| sort| tail -1)
-	[[ -n $GROUP_ID ]] && ((GROUP_ID++)) || GROUP_ID=400
-	
-	
-###Set the user
-
-	sudo dseditgroup -o create -n printerinstaller -i "$GROUP_ID" -n . printerinstaller
-	sudo dscl . create /Users/printerinstaller
-	sudo dscl . create /Users/printerinstaller passwd *
-	sudo dscl . create /Users/printerinstaller UniqueID "$USER_ID"
-	sudo dscl . create /Users/printerinstaller PrimaryGroupID "$GROUP_ID"
-  
-  
-###fix permissions then switch to new user	
-	sudo chown -R printerinstaller printerinstaller_env
-	sudo su ; su printerinstaller
-	  
-###turn on the virtual env	
-	cd printerinstaller_env
-    source bin/activate
-	
-###insatll printerinstaller_server
-	
-	git clone https://github.com/eahrold/printerinstaller-server.git printerinstaller
-	
-###install prerequistis
-
-	pip install django
-	pip install django-bootstrap_toolkit
-	
-### configure the app settings
-
-	cd printerinstaller
-	cp server/example_settings.py cp server/settings.py
-	
-	python manage.py collectstatic
-	python manage.py syncdb
-	
-	python manage.py runserver
-
-During initial testing, in the settings.py file you'll want to set
-	
-	RUNNING_ON_APACHE=False
-
-If ultimatley running via WSGI module on Apache, using the subpath /printers, when the time comes, changed this to 
-
-	RUNNING_ON_APACHE=True
-
-</br>
-### Additional OS X setup
-Other tid-bits for OSX Server.app [Setup instructions](https://github.com/eahrold/printerinstaller-server/blob/devel/OSX/OS X Install instructions.md)
-
+[add_list]:./docs/images/add_list.png
+[add_printer]:./docs/images/add_printer.png
+[front]:./docs/images/front.png
+[manage]:./docs/images/manage.png
+[quick-start]:./docs/quick_start.md
+[pi_client]:https://github.com/eahrold/Printer-Installer
