@@ -1,4 +1,4 @@
-Django
-django-bootstrap-toolkit
-markdown2
-south
+Django==1.5.4
+django-bootstrap-toolkit==2.15.0
+markdown2==2.3.0
+south==1.0.1
