@@ -16,15 +16,18 @@ def index(request):
         Application(name='Printer-Installer').save()
 
     site = Site.objects.get_current()
-    context = {'versions':versions,'site':site,'privateKey':privateKey}
+    context = {'versions':versions, 'site':site, 'privateKey':privateKey}
     
-    return render_to_response('sparkle/index.html',context,context_instance=RequestContext(request)) 
+    return render_to_response('sparkle/index.html', context, context_instance=RequestContext(request)) 
     
 @login_required(redirect_field_name='')
 def private_key_add(request):
     error = False
     if request.POST:
-        form = PrivateKeyForm(request.POST,request.FILES)
+        if "cancel" in request.POST:
+            return redirect('sparkle.views.index')
+
+        form = PrivateKeyForm(request.POST, request.FILES)
         if form.is_valid():
             privateKey = form.save(commit=True)
             privateKey.save()            
