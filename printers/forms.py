@@ -10,12 +10,23 @@ from conf import supported_protocols
 class PrinterListForm(forms.ModelForm):
     class Meta:
         model = PrinterList
+        exclude = ()
+
     printer = forms.ModelMultipleChoiceField(queryset=Printer.objects.all(), \
         widget=forms.CheckboxSelectMultiple, required=False)
-        
+   
+class SubscriptionPrinterListForm(forms.ModelForm):
+    class Meta:
+        model = SubscriptionPrinterList
+        exclude = ()
+
+    printer = forms.ModelMultipleChoiceField(queryset=Printer.objects.all(), \
+        widget=forms.CheckboxSelectMultiple, required=False)     
+
 class OptionForm(forms.ModelForm):
     class Meta:
         model = Option
+        exclude = ()
 
     option = forms.CharField(max_length=50, \
         label='Option*', \

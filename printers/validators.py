@@ -20,3 +20,8 @@ def validate_printer_name(value):
         raise ValidationError(u'printer name can not contain spaces')
     if value[0].isdigit():
         raise ValidationError(u'printer name must start with letter')
+
+def validate_server_address(value):
+    '''check that the url is formatted somewhat reasonably'''
+    pass
+

@@ -6,8 +6,12 @@ A django website for the [Printer-Installer client][pi_client]
 
 ![front][front]
 
+--
+
 ###Manage Printers
 ![manage][manage]
+
+--
 
 ##Auto Install Script
 For the simplest installation on OS X Server 10.7 or higher, run the auto install script by copy and pasting this into your terminal.
@@ -23,7 +27,7 @@ To manually setup and configure, you can use [this quick start guide][quick-star
 
 [add_list]:./docs/images/add_list.png
 [add_printer]:./docs/images/add_printer.png
-[front]:./docs/images/front.png
+[front]:./docs/images/index.png
 [manage]:./docs/images/manage.png
 [quick-start]:./docs/quick_start.md
 [pi_client]:https://github.com/eahrold/Printer-Installer

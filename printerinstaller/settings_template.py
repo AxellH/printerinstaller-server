@@ -6,6 +6,9 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 ##  Configure printerinstaller server specific items ##
 #######################################################
 
+# Name of your organization used only for branding
+# should be a quoted string
+ORGANIZATION_NAME="My Great Orginization"
 
 # Set to true if you want the ability to upload and 
 # server PPD files and Sparkle update

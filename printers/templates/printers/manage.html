@@ -6,28 +6,60 @@
 {% endblock %}
 
 {% block content %}
+<div class='container'>
+<dl>
+<dt><font size='5'>Printer Lists</font></dt>
+<dd>Printer lists are self service lists of printers for users. They appear on the front page of this site.</dd>
 <table class="client_info table table-striped table-condensed table-bordered">
-<h4>Printer Lists</h4>
 <tbody>
 {% if printerlists %}
     {% for list in printerlists %}
 	<tr>	
-		<th><a href={% url "printerlist_edit" list.id %}>{{ list.name }}</a></th>
+		<td><strong><a href={% url "printerlist_edit" list.id %}>{{ list.name }}</a><strong></td>
 		<td><a href={% url "printerlist_details" list.id %}>number of printers in list: {{list.printer.count}}</a>
         <td><a href={% url "printerlist_public" list.id %}>Public: {{list.public}}</a>
 		<td><a href={% url "printerlist_delete" list.id %}>Remove</a></td>
 	</tr>
     {% endfor %}
 {% else %}
-    <p>No printer lists are available.</br>
+    <p>No printer lists in the database.</br>
 {% endif %}
 </tbody>
 </table>
-<a href={% url "printerlist_add" %}>Add List</a>
-</br>
-</br>
+<a href={% url "printerlist_add" %}>Add printer lists</a>
+</dl>
+</div>
+<br/>
+
+<div class='container'>
+<dl>
+  <dt><font size='5'>Subscription Lists</font></dt>
+  <dd>Subscription printer lists are auto added/removed printers based on the subnet of the client</dd>
 <table class="client_info table table-striped table-condensed table-bordered">
-<h4>Printers</h4>
+<tbody>
+{% if subscription_lists %}
+    {% for list in subscription_lists %}
+	<tr>
+		<td><strong><a href={% url "subscription_list_edit" list.id %}>{{ list.subnet }}</a></strong></td>
+		<td>number of printers for subnet: {{list.printer.count}}</td>
+		<td><a href={% url "subscription_list_delete" list.id %}>Remove</a></td>
+	</tr>
+    {% endfor %}
+{% else %}
+    <p>No subscription lists in the database.</br>
+{% endif %}
+</tbody>
+</table>
+<a href={% url "subscription_list_add" %}>Add subscription list for subnet</a>
+</dl>
+</div>
+</br>
+
+<div class='container'>
+<dl>
+	<dt><font size='5'>Printers</font></dt>
+	<dd></dd>
+<table class="client_info table table-striped table-condensed table-bordered">
 <tbody>
 {% if printers %}
 <th>Name</th>
@@ -41,7 +73,7 @@
 <td></td>
     {% for printer in printers %}
 	<tr>
-		<th><a href={% url "printer_edit" printer.id %}>{{ printer.name }}</a></th>
+		<td><strong><a href={% url "printer_edit" printer.id %}>{{ printer.name }}</a></strong></td>
 		<td>{{ printer.description }}</td>
 		<td>{{ printer.host }}</td>
 		<td>{{ printer.protocol }}</td>
@@ -58,21 +90,28 @@
 </tbody>
 </table>
 <a href={% url "printer_add" %}>Add Printer</a>
+</dl>
+</div>
 </br>
-</br>
+
+<div class='container'>
 {% if options %}
+<dl>
+<dt><font size='5'>Printer Option</font></dt>
+<dd></dd>
 <table class="client_info table table-striped table-condensed table-bordered">
-<h4>Printer Options</h4>
+<h4></h4>
 <tbody>
     {% for option in options %}
 	<tr>	
-		<th><a href={% url "options_edit" option.id %}>{{ option.option }}</a></th>
+		<td><strong><a href={% url "options_edit" option.id %}>{{ option.option }}</a></strong></td>
 		<td><a href={% url "options_delete" option.id %}>Remove</a></td>
 	</tr>
     {% endfor %}
-
 </tbody>
 </table>
+</dl>
 {% endif %}
 <a href={% url "options_add" %}>Add New Option</a>
+</div>
 {% endblock %}

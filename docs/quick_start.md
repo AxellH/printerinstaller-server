@@ -53,10 +53,11 @@
 ### configure the app settings
 
 	cd printerinstaller
-	cp printerinstaller/example_settings.py cp printerinstaller/settings.py
+	cp printerinstaller/settings_template.py cp printerinstaller/settings.py
 	
 	python manage.py collectstatic
 	python manage.py syncdb
+	python manage.py migrate
 	
 During initial testing, in order to server static files,  you'll want to set 
 	

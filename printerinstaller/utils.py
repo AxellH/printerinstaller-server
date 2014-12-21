@@ -4,6 +4,16 @@ import subprocess
 import os
 from django.contrib.sites.models import Site, RequestSite
 
+def get_client_ip(request):
+    '''simple method to get client ip''' 
+    forward_ip = request.META.get('HTTP_X_FORWARDED_FOR')
+    if forward_ip:
+        ip_addr = forward_ip.split(',')[0]
+    else:
+        ip_addr = request.META.get('REMOTE_ADDR')
+    
+    return ip_addr   
+
 def github_latest_release(repo_dict):
     """Download the latest release based on a 
     a user's repo"""
@@ -19,9 +29,9 @@ def github_latest_release(repo_dict):
 
     supported_file_types = ['dmg', 'zip', 'gz']
     
-    dest = str(u'https://api.github.com/repos/%s/%s/releases' % (user, repo))    
-    data = json.load(urllib2.urlopen(dest))
     try:
+        dest = str(u'https://api.github.com/repos/%s/%s/releases' % (user, repo))    
+        data = json.load(urllib2.urlopen(dest))
         latest_release = data[0]['assets'][0]['browser_download_url']
         for file_type in supported_file_types:
             if latest_release.lower().endswith(file_type):
