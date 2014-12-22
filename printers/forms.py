@@ -52,7 +52,7 @@ class PrinterForm(forms.ModelForm):
     model = forms.CharField(max_length=50, label='Printer Model', \
         help_text='(As Listed with lpinfo -m)', required=False)
     
-    option = forms.ModelMultipleChoiceField(queryset=Option.objects.all(), \
+    options = forms.ModelMultipleChoiceField(queryset=Option.objects.all(), \
         widget = forms.CheckboxSelectMultiple, required=False)
     
     new_option = forms.CharField(max_length=50, required=False)

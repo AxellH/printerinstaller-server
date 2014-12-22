@@ -7,7 +7,18 @@ from django.views.generic.base import RedirectView
 from django.contrib import admin
 admin.autodiscover()
 
+from rest_framework.routers import DefaultRouter
+from rest_framework.urlpatterns import format_suffix_patterns
+
+from printers.api_views import OptionViewSet, PrinterViewSet
+
+router = DefaultRouter()
+router.register(r'options', OptionViewSet)
+router.register(r'printers', PrinterViewSet)
+
+
 urlpatterns = patterns('',
+    url(r'^api/', include(router.urls)),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/$', 'django.contrib.auth.views.login',name='login'),
     url(r'^logout/$', 'django.contrib.auth.views.logout_then_login',name='logout'),
@@ -34,3 +45,8 @@ if settings.SERVE_FILES and not settings.RUNNING_ON_APACHE:
     url(r'^files/(?P<path>.*)$' , 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     # (r'^ppds/(?P<path>.*)$',    'django.views.static.serve', {'document_root': settings.MEDIA_ROOT+'/ppds'}),
 )
+
+urlpatterns += [
+    url(r'^api-auth/', include('rest_framework.urls',
+                               namespace='rest_framework')),
+]

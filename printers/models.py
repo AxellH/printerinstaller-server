@@ -10,6 +10,8 @@ from printerinstaller.utils import get_dsa_signature, \
                                    delete_file_on_change, \
                                    delete_file_on_delete
 
+from printers.conf import supported_protocols
+
 class Option(models.Model):
     option = models.CharField(max_length=200, blank=True, unique=True)
     
@@ -17,14 +19,15 @@ class Option(models.Model):
         return u'%s' % self.option 
                         
 class Printer(models.Model):
+
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=200, blank=True)
     host = models.CharField(max_length=200)
-    protocol = models.CharField(max_length=200)
+    protocol = models.CharField(choices=supported_protocols(), default='ipp', max_length=200)
     location = models.CharField(max_length=200, blank=True)
     model = models.CharField(max_length=200, blank=True)
-    ppd_file = models.FileField(upload_to='ppds/', blank=True)
-    option = models.ManyToManyField(Option, blank=True)
+    ppd_file = models.FileField(upload_to='ppds/', blank=True,null=True)
+    options = models.ManyToManyField(Option, blank=True, null=True)
     
     def __unicode__(self):
         return u'%s' % self.description

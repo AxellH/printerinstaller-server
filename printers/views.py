@@ -81,7 +81,7 @@ def printer_add(request):
             printer = form.save(commit=True)
             new_option = form.cleaned_data['new_option']
             if new_option:
-                printer.option.create(option=new_option)
+                printer.options.create(option=new_option)
             printer.save()
             return redirect('printers.views.manage')            
     else:
@@ -101,7 +101,7 @@ def printer_edit(request, id):
             form.save()
             new_option = form.cleaned_data['new_option']
             if new_option:
-                printer.option.create(option=new_option)            
+                printer.options.create(options=new_option)            
             printer.save()
             return redirect('printers.views.manage')            
     else:
@@ -286,7 +286,7 @@ def generate_printer_dict_from_list(request, list_object):
                         'model':printer.model, \
                         'ppd_url':ppd_url,}
         
-        opts = printer.option.all()
+        opts = printer.options.all()
         addopt = []
         for opt in opts:
             addopt.append(opt.option)
