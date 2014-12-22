@@ -43,7 +43,7 @@ class Version(models.Model):
     active = models.BooleanField(default=False)
     
     def __unicode__(self):
-        return self.title
+        return u'%s' % self.title
 
     def save(self, *args, **kwargs):
         pre_update_path = self.update.path

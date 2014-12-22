@@ -14,7 +14,7 @@ class Option(models.Model):
     option = models.CharField(max_length=200, blank=True, unique=True)
     
     def __unicode__(self):
-        return self.option 
+        return u'%s' % self.option 
                         
 class Printer(models.Model):
     name = models.CharField(max_length=200)
@@ -27,12 +27,8 @@ class Printer(models.Model):
     option = models.ManyToManyField(Option, blank=True)
     
     def __unicode__(self):
-        return self.name
-        return self.description
-        return self.host
-        return self.protocol
-        return self.location
-        return self.model
+        return u'%s' % self.description
+
 
             
 
@@ -42,7 +38,7 @@ class PrinterList(models.Model):
     public = models.BooleanField(default=True)
     
     def __unicode__(self):
-        return self.name
+        return u'%s' % self.name
 
 class SubscriptionPrinterList(models.Model):
     subnet = models.CharField(max_length=200, blank=False)
