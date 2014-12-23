@@ -1,7 +1,6 @@
+import os, subprocess, urllib2
 import json
-import urllib2
-import subprocess
-import os
+
 from django.contrib.sites.models import Site, RequestSite
 
 def get_client_ip(request):
@@ -36,7 +35,7 @@ def github_latest_release(repo_dict):
         for file_type in supported_file_types:
             if latest_release.lower().endswith(file_type):
                 return latest_release
-    except Exception:
+    except IndexError:
         pass
     
     return None

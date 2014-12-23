@@ -21,20 +21,14 @@ class OptionSerializer(serializers.ModelSerializer):
         return instance
 
 
-class OptionField(serializers.RelatedField):
-    def to_representation(self, value):
-        print value
-        return '%s' % value
-
 class PrinterSerializer(serializers.ModelSerializer):
-    options = OptionField(many=True)
     
     class Meta:
         model = Printer
         fields = ('name', 'id',
                   'description', 'host', 
                   'protocol', 'location', 
-                  'model', 'ppd_file', 'options',)
+                  'model', 'ppd_file',)
 
 
     def create(self, validated_data):
@@ -56,13 +50,13 @@ class PrinterSerializer(serializers.ModelSerializer):
         instance.ppd_file = validated_data.get('ppd_file', instance.ppd_file)
 
         options = validated_data.get('options')
-        for opt in options:
-            _opt = Options.objects.filter(option=opt)
-            if _opt and not opt in instance.options.all():
-                instance.options.add(_opt)
-            else:
-                instance.options.create(option=opt)
-
+        if options:
+            for opt in options:
+                _opt = Options.objects.filter(option=opt)
+                if _opt and not opt in instance.options.all():
+                    instance.options.add(_opt)
+                else:
+                    instance.options.create(option=opt)
 
         instance.save()
         return instance

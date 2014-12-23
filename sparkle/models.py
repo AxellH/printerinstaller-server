@@ -4,12 +4,14 @@ import zipfile
 import tempfile
 import shutil
 import plistlib
+
 from django.db import models
 from django.conf import settings
 from django.dispatch import receiver
 from validators import *
-from printerinstaller.utils import get_dsa_signature, delete_file_on_change
 
+from printerinstaller.utils import delete_file_on_change
+from sparkle.utils import get_dsa_signature
 
 class PrivateKey(models.Model):
     def clean(self):
@@ -25,6 +27,10 @@ class Application(models.Model):
 
     def __unicode__(self):
         return self.name
+
+class GitHubVersion(models.Model):
+    url = models.URLField(max_length=200)
+    last_checked = models.DateField()
 
 class Version(models.Model):
     """A version for a given application"""

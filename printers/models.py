@@ -33,10 +33,8 @@ class Printer(models.Model):
         return u'%s' % self.description
 
 
-            
-
 class PrinterList(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
     printer = models.ManyToManyField(Printer, blank=True)
     public = models.BooleanField(default=True)
     
@@ -44,11 +42,11 @@ class PrinterList(models.Model):
         return u'%s' % self.name
 
 class SubscriptionPrinterList(models.Model):
-    subnet = models.CharField(max_length=200, blank=False)
+    subnet = models.CharField(max_length=200, unique=True)
     printer = models.ManyToManyField(Printer, blank=True)
     
     def __unicode__(self):
-        return self.subnet
+         return u'%s' % self.subnet
 
     @classmethod
     def instance_for_ip(cls, client_ip):
@@ -59,11 +57,6 @@ class SubscriptionPrinterList(models.Model):
 
         for _list in cls.objects.all():
             ip_addr, snet = _list.subnet.split('/')
-
-            print "list subnet: " + _list.subnet
-            print 'client ip: ' + client_ip
-            print 'subnet: ' + ip_addr
-            print 'subnet: ' + snet
             
             ip_bits = ip_to_bits(ip_addr)
             if client_ip_bits[:int(snet)] == ip_bits[:int(snet)]:
