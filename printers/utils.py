@@ -47,8 +47,8 @@ def generate_printer_dict_from_list(request, list_object):
     if settings.SERVE_FILES and Version.objects.all():
         _site_info = site_info(request)
         update_server = os.path.join(_site_info['root'], \
-                                    _site_info['subpath'], \
-                                    'sparkle/Printer-Installer/appcast.xml',)
+                                     _site_info['subpath'], \
+                                     'sparkle/Printer-Installer/appcast.xml',)
     else:
         update_server = settings.GITHUB_APPCAST_URL
 

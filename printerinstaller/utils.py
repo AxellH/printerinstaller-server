@@ -39,6 +39,9 @@ def site_info(request):
     _site_info = {'protocol': request.is_secure() and 'https' or 'http'}
     _site_info['port'] = request.META.get('SERVER_PORT')
     _site_info['subpath'] = request.META.get('SCRIPT_NAME')
+    
+    # Getting the site domain and name is more secure if we can get it
+    # from Site._meta so use that first, and fall back using the request.
     if Site._meta.installed:
         _site_info['domain'] = Site.objects.get_current().domain
         _site_info['name'] = Site.objects.get_current().name

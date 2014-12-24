@@ -1,16 +1,16 @@
 ##Quick Start
 
-###if you don't have virturalenv install it
+###If you don't have virturalenv install it
 
 	sudo easy_install virturalenv
 	
-###then create your virtural env
+###Then create your virtural env
 	
 	cd /path/to/www/
 	virtualenv printerinstaller_env
 
 
-###make a user  and group
+###Make a user  and group
 *Get the last user and group in the 400's,  if this command returns nothing than you can set the UniqueID and GroupID to 400*
 *This next part is a guide, and will not work if you have a user that is 499, user your best judgment
 
@@ -30,15 +30,15 @@
 	sudo dscl . create /Users/printerinstaller PrimaryGroupID "$GROUP_ID"
   
   
-###fix permissions then switch to new user	
+###Fix permissions then switch to new user	
 	sudo chown -R printerinstaller printerinstaller_env
 	sudo su ; su printerinstaller
 	  
-###turn on the virtual env
+###Turn on the virtual env
 	cd printerinstaller_env
     source bin/activate
 	
-###insatll printerinstaller_server
+###Insatll printerinstaller_server
 	
 	git clone https://github.com/eahrold/printerinstaller-server.git printerinstaller
 
@@ -46,11 +46,11 @@
 
 	cd printerinstaller 
 
-###install prerequistis
+###Install prerequistis
 
 	pip install -r setup/requirements.txt
 	
-### configure the app settings
+### Configure the app settings
 
 	cd printerinstaller
 	cp printerinstaller/settings_template.py cp printerinstaller/settings.py
@@ -63,9 +63,19 @@ During initial testing, in order to server static files,  you'll want to set
 	
 	RUNNING_ON_APACHE=False
 
-in the settings.py.  If ultimatley running via WSGI module on apache change it back
+In the settings.py.  If ultimatley running via WSGI module on apache change it back
 
 	RUNNING_ON_APACHE=True
+
+#####There are a few other settings you may wish to change.
+* if you want to server PPD files
+	```
+	SERVE_FILES=True
+	```
+* if you want to host custom builds of the Printer-Installer client app	
+	```
+	HOST_SPARKLE_UPDATES=True
+	```
 
 </br>
 ### Additional OS X setup

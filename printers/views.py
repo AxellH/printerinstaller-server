@@ -116,7 +116,7 @@ class ManageView(ProtectedView):
 class ModelModifyBase(FormView):
     model = None
     success_url = '/manage'
-    template_name = 'printers/base_form.html'
+    template_name = 'printers/forms/base_form.html'
     form_class = None
 
     def __init__(self, *args, **kwargs):
@@ -209,14 +209,14 @@ def toggle_printerlist_public(request, id):
     return redirect('manage')
 
 
-###############################################
-## This is the request that returns the plist #
-## for the Printer-Installer.app it should    #
-## be the only area that requires no login    #
-###############################################
+#############################################################################
+## This is the request that returns the plist for the Printer-Installer.app #
+##  it should  be the only area that requires no login                      #
+############################################################################
 def get_printer_list(request, name):
     '''display the xml plist for the client'''
     printer_list_object = get_object_or_404(PrinterList, name=name)    
+    
     p_dict = generate_printer_dict_from_list(request, printer_list_object)
     
     plist = writePlistToString(p_dict)
@@ -228,9 +228,10 @@ def get_subscription_list(request):
 
     client_ip = get_client_ip(request)
     printer_list_object = SubscriptionPrinterList.instance_for_ip(client_ip)
-    p_dict = generate_printer_dict_from_list(request, printer_list_object)
     
+    p_dict = generate_printer_dict_from_list(request, printer_list_object)
     p_dict['subnet'] = printer_list_object.subnet
+
     plist = writePlistToString(p_dict)
 
     return HttpResponse(plist, content_type='application/xml')
