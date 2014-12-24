@@ -16,7 +16,7 @@ A django website for the [Printer-Installer client][pi_client]
 ##Auto Install Script
 For the simplest installation on OS X Server 10.7 or higher, run the auto install script by copy and pasting this into your terminal.
 ```
-curl -L https://raw.github.com/eahrold/printerinstaller-server/master/OSX/osx_auto_install.command > /tmp/run.sh; chmod u+x /tmp/run.sh ; /tmp/run.sh
+python -c "$(curl -fsSL https://raw.githubusercontent.com/eahrold/dj-installers/master/dj-printerinstaller.py)"
 
 ```
 
