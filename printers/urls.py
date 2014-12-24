@@ -1,32 +1,45 @@
 '''Printer URLs'''
 from django.conf.urls import patterns, url
-from printers import views as pviews
+
+from printers.views import ModelCreateView, \
+                           ModelUpdateView, \
+                           ManageView, \
+                           IndexView, \
+                           toggle_printerlist_public, \
+                           get_printer_list, \
+                           get_subscription_list
+
+from printers.views import *
+
 from sparkle import views as sviews
 
+from printers.models import Printer, PrinterList, Option, SubscriptionPrinterList 
+from printers.forms import *
+
 urlpatterns = patterns('', \
-    url(r'^$', pviews.index, name='index'), \
-    url(r'^manage/$', pviews.manage, name='manage'), \
+    url(r'^$', IndexView.as_view(), name='index_view'), \
+    url(r'^manage/$', ManageView.as_view(), name='manage'), \
     url(r'^sparkle/$', sviews.index, name='su-index'), \
-    #
-    url(r'^printer/add/$', pviews.printer_form, {}, name='printer_add'), \
-    url(r'^printer/edit/(?P<id>\d+)/', pviews.printer_form, {}, name='printer_edit'), \
-    url(r'^printer/delete/(?P<id>\d+)/$', pviews.printer_delete, name='printer_delete'), \
-    url(r'^printer/details/(?P<id>\d+)/$', pviews.printer_details, name='printer_details'), \
-    #
-    url(r'^printerlist/add/$', pviews.printerlist_form, name='printerlist_add'), \
-    url(r'^printerlist/edit/(?P<id>\d+)/$', pviews.printerlist_form, name='printerlist_edit'), \
-    url(r'^printerlist/delete/(?P<id>\d+)/$', pviews.printerlist_delete, name='printerlist_delete'), \
-    url(r'^printerlist/details/(?P<id>\d+)/$', pviews.printerlist_details, name='printerlist_details'), \
-    url(r'^printerlist/public/(?P<id>\d+)/', pviews.printerlist_public,{}, name='printerlist_public'), \
-    #
-    url(r'^subscription_list/add/$', pviews.subscription_list_form, name='subscription_list_add'), \
-    url(r'^subscription_list/edit/(?P<id>\d+)/$', pviews.subscription_list_form, name='subscription_list_edit'), \
-    url(r'^subscription_list/delete/(?P<id>\d+)/$', pviews.subscription_list_delete, name='subscription_list_delete'), \
-    #
-    url(r'^options/add/$', pviews.options_form,{}, name='options_add'), \
-    url(r'^options/edit/(?P<id>\d+)/$', pviews.options_form,{}, name='options_edit'), \
-    url(r'^options/delete/(?P<id>\d+)/$', pviews.options_delete, name='options_delete'), \
-    #
-    url(r'^subscribe/$', pviews.get_subscription_list, name='get_subscription_list'), \
-    url(r'^(?P<name>[^/]+)/$', pviews.getlist, name='get_list'), \
+    # Add Actions 
+    url(r'^printer/add/$', ModelCreateView.as_view(model=Printer), {}, name='printer_add'), \
+    url(r'^printerlist/add/$', ModelCreateView.as_view(model=PrinterList),{}, name='printerlist_add'), \
+    url(r'^subscription_list/add/$', ModelCreateView.as_view(model=SubscriptionPrinterList),{}, name='subscription_list_add'), \
+    url(r'^options/add/$', ModelCreateView.as_view(model=Option), {}, name='options_add'), \
+    # Edit Actions
+    url(r'^printer/edit/(?P<pk>[\w-]+)$', ModelUpdateView.as_view(model=Printer), {}, name='printer_edit'), \
+    url(r'^printerlist/edit/(?P<pk>[\w-]+)$', ModelUpdateView.as_view(model=PrinterList), name='printerlist_edit'), \
+    url(r'^subscription_list/edit/(?P<pk>[\w-]+)$', ModelUpdateView.as_view(model=SubscriptionPrinterList), name='subscription_list_edit'), \
+    url(r'^options/edit/(?P<pk>[\w-]+)$', ModelUpdateView.as_view(model=Option), {}, name='options_edit'), \
+    # Delete Actions
+    url(r'^printer/delete/(?P<id>\d+)/$', object_delete, {'model_class':Printer},name='printer_delete'), \
+    url(r'^printerlist/delete/(?P<id>\d+)/$', object_delete, {'model_class':PrinterList}, name='printerlist_delete'), \
+    url(r'^subscription_list/delete/(?P<id>\d+)/$', object_delete,{'model_class':SubscriptionPrinterList}, name='subscription_list_delete'), \
+    url(r'^options/delete/(?P<id>\d+)/$', object_delete, {'model_class':Option}, name='options_delete'), \
+    # Details
+    url(r'^printer/details/(?P<id>\d+)/$', printer_details, name='printer_details'), \
+    url(r'^printerlist/details/(?P<id>\d+)/$', printerlist_details, name='printerlist_details'), \
+    # Other
+    url(r'^printerlist/public/(?P<id>\d+)/', toggle_printerlist_public,{}, name='printerlist_public'), \
+    url(r'^subscribe/$', get_subscription_list, name='get_subscription_list'), \
+    url(r'^(?P<name>[^/]+)/$', get_printer_list, name='get_list'), \
 )

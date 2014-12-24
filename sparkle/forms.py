@@ -6,12 +6,14 @@ from validators import *
 class AppcastForm(forms.ModelForm):
     class Meta:
         model = Version
-        
+        exclude = ()
+
     application  = forms.ModelChoiceField(widget=forms.HiddenInput(),queryset=Application.objects.all())
 
 class PrivateKeyForm(forms.ModelForm):
 	class Meta:
 		model = PrivateKey
+        exclude = ()
 
 	private_key = forms.FileField(label='Private Key',required=True)  
 

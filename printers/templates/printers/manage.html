@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load staticfiles %}
 
 {% block nav %}
 {% include "printers/nav.html" %}
@@ -114,4 +115,9 @@
 {% endif %}
 <a href={% url "options_add" %}>Add New Option</a>
 </div>
+
 {% endblock %}
+
+
+
+

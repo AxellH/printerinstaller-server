@@ -34,7 +34,6 @@ if settings.HOST_SPARKLE_UPDATES:
 # then we can add the rest of the url patterns which are sparse.
 urlpatterns += patterns('',
     url(r'^', include('printers.urls'),name='printers'),
-    url(r'^$', 'printers.views.index', name='home'),
     )
 
 if settings.SERVE_FILES and not settings.RUNNING_ON_APACHE:

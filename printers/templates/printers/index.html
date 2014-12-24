@@ -87,21 +87,24 @@ Welcome to the managed printer portal.
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="walkThroughModalLabel">Setup walkthrough</h4>
+        <h4 class="modal-title" id="walkThroughModalLabel">Setting up is real easy.</h4>
       </div>
       <div class="modal-body">
       	<dl>
-      		<dt>Install</dt>
-      		<dd>A zip file should now be in you Downloads folder. Unzip it, then move it to you Applications folder</dd>
+      		<dt>Download & Install</dt>
+      		<dd>After <a href={{ version }}>downloading</a> the client application from this site, a zip file should be in you "Downloads" folder. Unzip it, then move the unzipped application to you "Applications" folder. Open it once.</dd>
       		<dd><img src={% static "images/copy.png" %}></dd>
 			</br></br></br>
 	      	<dt>Configure</dt>
-			<dd>Clicking on the "Configure..." menu will bring up other options.</dd>
+			<dd>Clicking on the <a href="{{ domain }}/open">"Configure..."</a> menu will bring up other options.</dd>
 			<dd><img src={% static "images/config.png" %}></dd>
 			</br></br></br>
 			<dt>Add/Remove</dt>
 			<dd>Then simply select the printer you want to add or remove</dd>  
         	<dd><img src="{% static "images/default.png" %}"></dd>
+        	{% if subscriptions %}
+        	<dd>If you're subscribed to the printers, the standard print dialog box will get auto updated based on the ones nearest you, nothing more needs doing.</dd>
+        	{% endif %}
     	</dl>
       </div>
       <div class="modal-footer">

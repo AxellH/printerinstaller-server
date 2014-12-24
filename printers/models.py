@@ -6,8 +6,7 @@ from django.utils import timezone
 from django.db import models
 from django.dispatch import receiver
 from django.conf import settings
-from printerinstaller.utils import get_dsa_signature, \
-                                   delete_file_on_change, \
+from printerinstaller.utils import delete_file_on_change, \
                                    delete_file_on_delete
 
 from printers.conf import supported_protocols
@@ -32,6 +31,11 @@ class Printer(models.Model):
     def __unicode__(self):
         return u'%s' % self.description
 
+    def get_absolute_url(self):
+        return "/printers/%i/" % self.id
+
+    def get_details_url(self):
+        return "/printer/details/%i/" % self.id
 
 class PrinterList(models.Model):
     name = models.CharField(max_length=200, unique=True)

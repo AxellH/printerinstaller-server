@@ -112,7 +112,7 @@ STATICFILES_DIRS = (
 
 LOGIN_URL='django.contrib.auth.views.login'
 LOGOUT_URL='django.contrib.auth.views.logout'
-LOGIN_REDIRECT_URL='printers.views.manage'
+LOGIN_REDIRECT_URL='manage'
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -166,12 +166,17 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #'django.contrib.markup',
-    # Uncomment the next line to enable the admin:
-    'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
-    'printers',
+    # Uncomment the next line to enable the admin:
+    'django.contrib.admin',
+
+    # Contrib apps
     'bootstrap_toolkit',
+    'rest_framework',
+
+    # Project level apps
+    'printers',
 )
 
 if HOST_SPARKLE_UPDATES and not 'DYNO' in os.environ :
