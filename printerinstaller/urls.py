@@ -10,7 +10,7 @@ admin.autodiscover()
 from rest_framework.routers import DefaultRouter
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from printers.api_views import OptionViewSet, PrinterViewSet
+from printers.views_api import OptionViewSet, PrinterViewSet
 
 router = DefaultRouter()
 router.register(r'options', OptionViewSet)

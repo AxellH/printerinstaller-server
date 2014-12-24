@@ -177,10 +177,8 @@ INSTALLED_APPS = (
 
     # Project level apps
     'printers',
+    'sparkle',
 )
-
-if HOST_SPARKLE_UPDATES and not 'DYNO' in os.environ :
-    INSTALLED_APPS = INSTALLED_APPS + ('sparkle',)
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 

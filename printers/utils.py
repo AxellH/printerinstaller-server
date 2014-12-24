@@ -1,14 +1,15 @@
 '''A collection of helper functions'''
 import os
+import json, urllib2
 
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.conf import settings
 
+from printerinstaller.utils import site_info
 from printers.models import SubscriptionPrinterList
 from sparkle.models import Version
 
-from printerinstaller.utils import site_info
 
 def github_latest_release(repo_dict):
     """Download the latest release based on a 

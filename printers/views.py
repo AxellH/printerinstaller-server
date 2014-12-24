@@ -10,6 +10,7 @@ from django.template.loader import get_template
 from django.conf import settings
 from django.views.generic import TemplateView, View
 from django.views.generic.edit import FormView, CreateView, UpdateView
+from django.core.urlresolvers import reverse
 
 from urlparse import urlunparse
 from plistlib import writePlistToString
@@ -115,9 +116,11 @@ class ManageView(ProtectedView):
     
 class ModelModifyBase(FormView):
     model = None
-    success_url = '/manage'
     template_name = 'printers/forms/base_form.html'
     form_class = None
+
+    def get_success_url(self):
+        return reverse('manage')
 
     def __init__(self, *args, **kwargs):
         model = kwargs.get('model')
