@@ -40,7 +40,7 @@ class IndexView(TemplateView):
         context = super(IndexView, self).get_context_data(**kwargs)
         
         # add the static items to the context
-        context['org'] = settings.ORGANIZATION_NAME
+        context['organization'] = settings.ORGANIZATION_NAME
 
         # Add in the querysets to 
         context['printerlists'] = PrinterList.objects.filter(public=True)
@@ -113,19 +113,29 @@ class ManageView(ProtectedView):
         return context
 
 
-    
-class ModelModifyBase(FormView):
+class BaseFormView(FormView):
     model = None
     template_name = 'printers/forms/base_form.html'
     form_class = None
 
+    def form_valid(self, form):
+        self.object = form.save(commit=True)
+
+        # The printer model has an extra potential step of creating
+        # a new option at the time of creating a new printer object
+        if self.model == Printer:
+            new_option = form.cleaned_data['new_option']
+            if new_option:
+                self.object.options.create(option=new_option)            
+                self.object.save()
+        return super(BaseFormView, self).form_valid(form)
     def get_success_url(self):
         return reverse('manage')
 
     def __init__(self, *args, **kwargs):
         model = kwargs.get('model')
         form_class = kwargs.get('form_class')
-        # If no alternate form_class was passed in 
+        # If a form_class is not provided at init 
         # set it using the model key
         if model and not form_class:
             if model == Printer:
@@ -136,42 +146,21 @@ class ModelModifyBase(FormView):
                 self.form_class = PrinterListForm
             elif model == SubscriptionPrinterList:
                 self.form_class = SubscriptionPrinterListForm
-        super(ModelModifyBase, self).__init__(*args, **kwargs)
+        super(BaseFormView, self).__init__(*args, **kwargs)
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(ModelModifyBase, self).dispatch(*args, **kwargs)
+        return super(BaseFormView, self).dispatch(*args, **kwargs)
 
 
-class ModelCreateView(ModelModifyBase, CreateView):
+class ModelCreateView(BaseFormView, CreateView):
     '''Base Create View'''
-    def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-        self.object = form.save(commit=True)
-
-        if self.model == Printer:
-            new_option = form.cleaned_data['new_option']
-            if new_option:
-                self.object.options.create(option=new_option)            
-                self.object.save()
-        return super(ModelCreateView, self).form_valid(form)
+    pass
 
 
-class ModelUpdateView(ModelModifyBase, UpdateView):
+class ModelUpdateView(BaseFormView, UpdateView):
     '''Base Update View'''
-    
-    def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-        self.object = form.save(commit=True)
-
-        if self.model == Printer:
-            new_option = form.cleaned_data['new_option']
-            if new_option:
-                self.object.options.create(option=new_option)            
-                self.object.save()
-        return super(ModelUpdateView, self).form_valid(form)
+    pass
     
 
 @login_required(redirect_field_name='')

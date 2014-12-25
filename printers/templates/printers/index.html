@@ -9,8 +9,10 @@
 {% endblock %}
 {% block content %}
 
-<h2>
+{% if printerlists or subscriptions %}
+
 <div class='container'>
+<h2>
 {% if organization %}
 Welcome to {{ organization }}'s managed printer portal.
 {% else %}
@@ -21,7 +23,6 @@ Welcome to the managed printer portal.
 <h4>In no time you'll be and running with the all printers you need.</h4></br>
 </div>
 
-{% if printerlists or subscriptions %}
 
 
 <font size="4">
@@ -118,7 +119,7 @@ Welcome to the managed printer portal.
 </font>
 
 {% else %}
-<div class='alert alert-info'>
+<div class='container alert alert-info'>
 	<H2>It looks like nothing's configured yet.</H2>
     <H4><a href={% url "manage" %}>Click here to get started setting up your orginazition's printers.</a></H4>
 </div>
