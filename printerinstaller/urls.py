@@ -39,8 +39,8 @@ urlpatterns += patterns('',
 if settings.SERVE_FILES and not settings.RUNNING_ON_APACHE:
     urlpatterns += patterns('',
     # static files
-    url(r'^static/(?P<path>.*)$' ,  'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
-    url(r'^files/private/*' , RedirectView.as_view(url=u'/%s', permanent=False), name='nowhere'),
+    url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
+    url(r'^files/private/*', RedirectView.as_view(url=u'/%s', permanent=False), name='nowhere'),
     url(r'^files/(?P<path>.*)$' , 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     # (r'^ppds/(?P<path>.*)$',    'django.views.static.serve', {'document_root': settings.MEDIA_ROOT+'/ppds'}),
 )

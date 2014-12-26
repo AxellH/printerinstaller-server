@@ -2,7 +2,7 @@
 
 {% load staticfiles %}
 {% load i18n %}
-
+{% load schemes %}
 
 {% block nav %}
 <li><a href={%url "manage" %}>Manage</a></li>
@@ -44,7 +44,7 @@ Welcome to the managed printer portal.
 	
 	<ul>
 	    {% for list in printerlists %}
-		<li><font size="3"><a href="{{ domain }}/{{ list.name }}">{{ list.name }}</a></font></li>
+		<li><font size="3"><a href="{{ list.name|pi_url:site_info}}">{{ list.name }}</a></font></li>
 	    {% endfor %}
 	</ul>
     <hr></hr>

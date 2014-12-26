@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load staticfiles %}
+{% load schemes %}
 
 {% block nav %}
 {% include "printers/nav.html" %}
@@ -18,6 +19,8 @@
 	<tr>	
 		<td><strong><a href={% url "printerlist_edit" list.id %}>{{ list.name }}</a><strong></td>
 		<td><a href={% url "printerlist_details" list.id %}>number of printers in list: {{list.printer.count}}</a>
+		<td><a href={{ list.name|xml_url:site_info }}>View XML</td>
+		<td><a href={{ list.name|pi_url:site_info }}>Open in Client app</td>
         <td><a href={% url "printerlist_public" list.id %}>Public: {{list.public}}</a>
 		<td><a href={% url "printerlist_delete" list.id %}>Remove</a></td>
 	</tr>
@@ -97,11 +100,14 @@
 
 <div class='container'>
 {% if options %}
+<section>
 <dl>
 <dt><font size='5'>Printer Option</font></dt>
 <dd></dd>
+<script src="http://malsup.github.com/jquery.form.js"></script> 
 <table class="client_info table table-striped table-condensed table-bordered">
 <h4></h4>
+<!-- Modal --> <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> </div><!-- /.modal -->
 <tbody>
     {% for option in options %}
 	<tr>	
@@ -112,12 +118,16 @@
 </tbody>
 </table>
 </dl>
+
+</section>
 {% endif %}
 <a href={% url "options_add" %}>Add New Option</a>
 </div>
 
 {% endblock %}
 
+{% block script%}
+{% endblock %}
 
 
 

@@ -18,7 +18,8 @@ import datetime
 
 from sparkle.models import Version, GitHubVersion
 
-from printerinstaller.utils import get_client_ip
+from printerinstaller.utils import get_client_ip, \
+                                   site_info
 
 from printers.models import *
 from printers.forms import *
@@ -78,13 +79,12 @@ class IndexView(TemplateView):
 
         context['version'] = version_url
 
-        ''' Construct a domain with the printerinstaller(s) uri type
-        this is used to activate the pi-client when a link is clicked'''
-        host = self.request.get_host()
-        subpath = self.request.META.get('SCRIPT_NAME')
-        scheme = self.request.is_secure() and 'printerinstallers' or 'printerinstaller'
+        '''Construct the site url used with the template tags
+        to generate the printerinstaller(s) registered uri and
+        xml url for the printerlists'''
+        
 
-        context['domain'] = urlunparse([scheme, host, subpath, None, None, None])
+        context['site_info'] = site_info(self.request)
 
         return context
 
@@ -109,6 +109,12 @@ class ManageView(ProtectedView):
         context['subscription_lists'] = subscription_lists
         context['printers'] = printers
         context['options'] = options
+
+        '''Construct the site url used with the template tags
+        to generate the printerinstaller(s) registered uri and
+        xml url for the printerlists'''
+
+        context['site_info'] = site_info(self.request)
 
         return context
 

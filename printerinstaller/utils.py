@@ -1,5 +1,5 @@
 import os, subprocess, urllib2
-
+from urlparse import urlunparse
 from django.contrib.sites.models import Site, RequestSite
 
 def get_client_ip(request):
@@ -35,20 +35,31 @@ def delete_file_on_delete(instance, attr):
 
 def site_info(request):
     '''return info relating to the site'''
-    _site_info = {'protocol': request.is_secure() and 'https' or 'http'}
-    _site_info['port'] = request.META.get('SERVER_PORT')
-    _site_info['subpath'] = request.META.get('SCRIPT_NAME')
-    
+    _site_info = {
+        'scheme': request.is_secure() and 'https' or 'http',
+        'port': request.META.get('SERVER_PORT'),
+        'subpath': request.META.get('SCRIPT_NAME'),
+    }
+   
     # Getting the site domain and name is more secure if we can get it
     # from Site._meta so use that first, and fall back using the request.
     if Site._meta.installed:
-        _site_info['domain'] = Site.objects.get_current().domain
-        _site_info['name'] = Site.objects.get_current().name
-    else:
-        _site_info['domain'] = RequestSite(request).domain
+        if not Site.objects.get_current().domain == 'example.com':
+            host = Site.objects.get_current().domain
+            if 'port' in _site_info:
+                host = os.path.join(host, ":%s" % _site_info['port'])
+
+            _site_info['host'] = host
+            _site_info['name'] = Site.objects.get_current().name
+    
+    if not 'host' in _site_info:
+        _site_info['host'] = RequestSite(request).domain
         _site_info['name'] = RequestSite(request).name
-    _site_info['root'] = _site_info['protocol'] + '://' + _site_info['domain']
-    if _site_info['port'] and not _site_info['port'] in ('443', '80',):
-        _site_info['root'] = _site_info['root']+':'+ _site_info['port']
+
+    _site_info['root'] = urlunparse([_site_info['scheme'],
+                                     _site_info['host'],
+                                     _site_info['subpath'],
+                                     None, None, None])
+    
     return _site_info
 

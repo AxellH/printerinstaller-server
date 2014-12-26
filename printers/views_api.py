@@ -35,11 +35,10 @@ class PrinterViewSet(viewsets.ModelViewSet):
     queryset = Printer.objects.all()
     serializer_class = PrinterSerializer
 
-    filter_fields = ('name', 'location', 'description')
     filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('name', 'location', 'description')
 
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
 
     def perform_create(self, serializer):
         serializer.save()
