@@ -5,31 +5,37 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 #######################################################
 ##  Configure printerinstaller server specific items ##
 #######################################################
+APP_NAME = "Printer Portal"
 
 # Name of your organization used only for branding
 # should be a quoted string
-ORGANIZATION_NAME="My Great Orginization"
+ORGANIZATION_NAME = "My Great Orginization"
 
 # Set to true if you want the ability to upload and 
 # server PPD files and Sparkle update
-SERVE_FILES=True
+SERVE_FILES = True
 
 # Configuring Sparkle Updates
 # if set to True you will be able to upload versions of
 # Printer-Installer.app and it will automatically create AppCasts
 # for Sparkle, otherwise it will use the GITHUB_APPCAST_URL.
-HOST_SPARKLE_UPDATES=True
+HOST_SPARKLE_UPDATES = True
+
+# Should access to the printers be available via 
+# the REST api interface at http(s)://server.com/api
+# Currently this is purely experimental.
+INCLUDE_REST_API = False
 
 # Set this to True to disable the 'django.views.static.serve'
-RUNNING_ON_APACHE=True
+RUNNING_ON_APACHE = True
 
 # If not hosting sparkle updates, it will use this url for AppCasts.
 # If building a custom version of Printer-Installer.app to provide a
 # print quota software for your environment set this to your forks URL
-GITHUB_APPCAST_URL="https://raw.githubusercontent.com/eahrold/Printer-Installer/master/Downloads/appcast.xml"
+GITHUB_APPCAST_URL = "https://raw.githubusercontent.com/eahrold/Printer-Installer/master/Downloads/appcast.xml"
 
 # If not hosting sparkle updates, set these to the
-GITHUB_LATEST_RELEASE = {'user':'eahrold','repo':'Printer-Installer'}
+GITHUB_LATEST_RELEASE = {'user':'eahrold', 'repo':'Printer-Installer'}
 #################################################
 ##  End printerinstaller server specific items ##
 #################################################
@@ -83,7 +89,7 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
-# Absolute filesystem path to the directory that will hold user-uploaded files.
+# Absolute file system path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_DIR, 'files/')
 

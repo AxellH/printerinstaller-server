@@ -12,20 +12,21 @@ from printerinstaller.utils import delete_file_on_change, \
 from printers.conf import supported_protocols
 
 class Option(models.Model):
+    '''Option model object'''
     option = models.CharField(max_length=200, blank=True, unique=True)
     
     def __unicode__(self):
         return u'%s' % self.option 
                         
 class Printer(models.Model):
-
+    '''Printer model object'''
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=200, blank=True)
     host = models.CharField(max_length=200)
     protocol = models.CharField(choices=supported_protocols(), default='ipp', max_length=200)
     location = models.CharField(max_length=200, blank=True)
     model = models.CharField(max_length=200, blank=True)
-    ppd_file = models.FileField(upload_to='ppds/', blank=True,null=True)
+    ppd_file = models.FileField(upload_to='ppds/', blank=True, null=True)
     options = models.ManyToManyField(Option, blank=True, null=True)
     
     def __unicode__(self):
@@ -55,6 +56,8 @@ class SubscriptionPrinterList(models.Model):
     @classmethod
     def instance_for_ip(cls, client_ip):
         '''return the subscription list for a specific ip address'''
+
+        # inspired by https://lukasklein.com/blog/django-ip-cidr-check/
         byte_to_bits = lambda b: bin(int(b))[2:].rjust(8, '0')
         ip_to_bits = lambda ip: ''.join([byte_to_bits(b) for b in ip.split('.')])
         client_ip_bits = ip_to_bits(client_ip)

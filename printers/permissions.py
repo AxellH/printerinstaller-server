@@ -1,6 +1,10 @@
 from rest_framework import permissions
 
 
+# Core Permissions
+
+
+# Serializer / RestAPI permissins
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     Custom permission to only allow owners of an object to edit it.

@@ -132,8 +132,10 @@ class BaseFormView(FormView):
         if self.model == Printer:
             new_option = form.cleaned_data['new_option']
             if new_option:
-                self.object.options.create(option=new_option)            
+                obj = Option.objects.get_or_create(option=new_option)
+                self.object.options.add(obj[0].pk)            
                 self.object.save()
+
         return super(BaseFormView, self).form_valid(form)
     def get_success_url(self):
         return reverse('manage')

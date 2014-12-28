@@ -31,3 +31,5 @@ To manually setup and configure, you can use [this quick start guide][quick-star
 [manage]:./docs/images/manage.png
 [quick-start]:./docs/quick_start.md
 [pi_client]:https://github.com/eahrold/Printer-Installer
+
+

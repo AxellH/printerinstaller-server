@@ -64,8 +64,8 @@
 	<dt><font size='5'>Printers</font></dt>
 	<dd></dd>
 <table class="client_info table table-striped table-condensed table-bordered">
-<tbody>
 {% if printers %}
+<thead>
 <th>Name</th>
 <th>Description</th>
 <th>Host/Server</th>
@@ -74,7 +74,9 @@
 <th>Location</th>
 <th>PPD Provided</th>
 <th>Number of Options</th>
-<td></td>
+<th></th>
+</thead>
+<tbody>
     {% for printer in printers %}
 	<tr>
 		<td><strong><a href={% url "printer_edit" printer.id %}>{{ printer.name }}</a></strong></td>
@@ -100,14 +102,11 @@
 
 <div class='container'>
 {% if options %}
-<section>
 <dl>
 <dt><font size='5'>Printer Option</font></dt>
 <dd></dd>
 <script src="http://malsup.github.com/jquery.form.js"></script> 
 <table class="client_info table table-striped table-condensed table-bordered">
-<h4></h4>
-<!-- Modal --> <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> </div><!-- /.modal -->
 <tbody>
     {% for option in options %}
 	<tr>	
@@ -117,16 +116,17 @@
     {% endfor %}
 </tbody>
 </table>
+<a href={% url "options_add" %}>Add New Option</a>
+
 </dl>
 
-</section>
 {% endif %}
-<a href={% url "options_add" %}>Add New Option</a>
 </div>
 
 {% endblock %}
 
 {% block script%}
+<script type='text/javascript' src='{{ STATIC_URL }}js/table_filter.js'></script>
 {% endblock %}
 
 

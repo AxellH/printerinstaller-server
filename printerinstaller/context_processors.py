@@ -5,3 +5,6 @@ def update_server(request):
 
 def serve_static(request):
 	return {'serve_static': settings.SERVE_FILES}
+
+def app_name(request):
+	return {'APP_NAME': settings.APP_NAME}

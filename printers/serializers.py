@@ -22,14 +22,18 @@ class OptionSerializer(serializers.ModelSerializer):
 
 
 class PrinterSerializer(serializers.ModelSerializer):
-    
+    options = serializers.StringRelatedField(many=True)
     class Meta:
         model = Printer
         fields = ('name', 'id',
                   'description', 'host', 
                   'protocol', 'location', 
-                  'model', 'ppd_file',)
+                  'model', 'ppd_file','options')
 
+
+    def to_internal_value(self, data):
+        print data.get('options')
+        return data
 
     def create(self, validated_data):
         """
@@ -41,23 +45,29 @@ class PrinterSerializer(serializers.ModelSerializer):
         """
         Update and return an existing `Printer` instance, given the validated data.
         """
+        print 'req: %s' % validated_data
+        print "ORIG PPD_FILE: %s" % instance.ppd_file
+
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
         instance.host = validated_data.get('host', instance.host)
         instance.protocol = validated_data.get('protocol', instance.protocol)
         instance.location = validated_data.get('location', instance.location)
         instance.model = validated_data.get('model', instance.model)
+        
         instance.ppd_file = validated_data.get('ppd_file', instance.ppd_file)
+        
+        print "MOD_PPD_FILE: %s" % instance.ppd_file
+        
 
         options = validated_data.get('options')
+        print "options : %s" % options
+
         if options:
             for opt in options:
-                _opt = Options.objects.filter(option=opt)
-                if _opt and not opt in instance.options.all():
-                    instance.options.add(_opt)
-                else:
-                    instance.options.create(option=opt)
-
+                obj = Option.objects.get_or_create(option=opt)
+                instance.options.add(obj[0].pk)
+               
         instance.save()
         return instance
 
